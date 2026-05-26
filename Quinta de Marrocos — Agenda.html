@@ -40,29 +40,40 @@ input[type=file]{display:none;}
 .dia-titulo .sub{font-size:.74rem;color:var(--cinza);margin-top:2px;}
 .sem-eventos{background:var(--branco);border:1.5px solid var(--cinza-c);border-radius:12px;padding:1.75rem;text-align:center;color:var(--cinza);font-size:.85rem;}
 .sem-eventos span{font-size:1.5rem;display:block;margin-bottom:.4rem;}
-.evento{background:var(--branco);border:1.5px solid var(--cinza-c);border-radius:12px;padding:.9rem 1rem;margin-bottom:.75rem;}
-.evento.dormida{border-left:4px solid #1A4A8A;}
-.evento.jantar{border-left:4px solid var(--dourado);}
-.evento.almoco{border-left:4px solid #8B4A1A;}
-.evento.visita{border-left:4px solid var(--verde-m);}
-.evento.prova{border-left:4px solid var(--verde-c);}
-.evento.outros{border-left:4px solid var(--cinza-c);}
-.ev-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:.5rem;}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:500;}
+.evento{background:var(--branco);border:1.5px solid var(--cinza-c);border-radius:10px;padding:.6rem .8rem;margin-bottom:.5rem;border-left:4px solid var(--cinza-c);cursor:pointer;transition:box-shadow .15s;}
+.evento.dormida{border-left-color:#1A4A8A;}
+.evento.dormida.entrada{border-left-color:#27AE60;background:#F0FBF4;}
+.evento.dormida.saida{border-left-color:#E74C3C;background:#FEF5F5;}
+.evento.jantar{border-left-color:var(--dourado);}
+.evento.almoco{border-left-color:#8B4A1A;}
+.evento.visita{border-left-color:var(--verde-m);}
+.evento.prova{border-left-color:var(--verde-c);}
+.evento.outros{border-left-color:var(--cinza-c);}
+/* linha compacta sempre visível */
+.ev-linha{display:flex;align-items:center;gap:.5rem;}
+.ev-linha-esq{flex:1;min-width:0;}
+.ev-linha-dir{display:flex;align-items:center;gap:.4rem;flex-shrink:0;}
+.badge{display:inline-block;padding:1px 7px;border-radius:20px;font-size:.65rem;font-weight:500;}
 .bd{background:#E8F0FB;color:#1A4A8A;}
 .bj{background:var(--dourado-c);color:#7A5A10;}
 .ba{background:#FBF0E8;color:#8A4A1A;}
 .bv{background:var(--verde-p);color:var(--verde);}
 .bp{background:#F0F8E8;color:#3A6010;}
 .bo{background:var(--cinza-c);color:var(--cinza);}
-.ev-hora{font-size:.75rem;color:var(--cinza);font-weight:500;white-space:nowrap;}
-.ev-nome{font-size:.95rem;font-weight:500;color:var(--texto);margin-bottom:.5rem;font-family:'Playfair Display',serif;}
-.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .6rem;}
-.ev-item{font-size:.76rem;}
-.ev-item .k{color:var(--cinza);font-size:.68rem;display:block;}
+.entrada-badge{background:#D5F5E3;color:#1A6B3A;padding:1px 7px;border-radius:20px;font-size:.65rem;font-weight:600;}
+.saida-badge{background:#FADBD8;color:#8B2020;padding:1px 7px;border-radius:20px;font-size:.65rem;font-weight:600;}
+.ev-hora{font-size:.72rem;color:var(--cinza);font-weight:500;white-space:nowrap;}
+.ev-nome{font-size:.88rem;font-weight:500;color:var(--texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ev-sub{font-size:.7rem;color:var(--cinza);margin-top:1px;}
+/* detalhe expandido */
+.ev-detalhe{display:none;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--cinza-c);}
+.evento.aberto .ev-detalhe{display:block;}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:.25rem .6rem;margin-bottom:.4rem;}
+.ev-item{font-size:.74rem;}
+.ev-item .k{color:var(--cinza);font-size:.66rem;display:block;}
 .ev-item .v{color:var(--texto);font-weight:500;}
-.ev-obs{margin-top:.6rem;background:var(--dourado-c);border-radius:8px;padding:.5rem .65rem;font-size:.74rem;color:#5A4010;line-height:1.5;}
-.ev-obs strong{display:block;margin-bottom:.15rem;font-size:.7rem;}
+.ev-obs{background:var(--dourado-c);border-radius:6px;padding:.45rem .6rem;font-size:.72rem;color:#5A4010;line-height:1.5;}
+.ev-obs strong{display:block;margin-bottom:.1rem;font-size:.68rem;}
 .pagar{color:var(--dourado);font-weight:600;}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--verde);padding:.55rem 1rem;display:flex;justify-content:center;gap:.5rem;border-top:2px solid var(--dourado);}
 .nav-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:.5rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;}
@@ -339,11 +350,33 @@ function renderDia(){
     const lingua=ev['Língua']||'';
     const pais=ev['País']||'';
     const agencia=ev['Agência']||'';
-    const noites=ev['Noites']||'';
+    const noites=parseInt(ev['Noites'])||1;
     const obs=ev['Observações']||'';
     const pagar=String(ev['Pagar na Quinta?']||'').toLowerCase();
     const valor=ev['Valor a Pagar (€)']||'';
     const guia=ev['Guia/Motorista']||'';
+    const dataEv=parseDateStr(ev['Data']);
+
+    // calcular entrada/saída para dormidas
+    let entradaSaida='';
+    let extraClasse='';
+    if(tc==='dormida'&&dataEv){
+      const isEntrada=mesmoDia(dataEv,data);
+      const dataSaida=new Date(dataEv);dataSaida.setDate(dataEv.getDate()+noites);
+      const isSaida=mesmoDia(dataSaida,data);
+      if(isEntrada&&isSaida){entradaSaida='<span class="entrada-badge">↓ Entrada</span><span class="saida-badge">↑ Saída</span>';extraClasse=' entrada';}
+      else if(isEntrada){entradaSaida='<span class="entrada-badge">↓ Entrada</span>';extraClasse=' entrada';}
+      else if(isSaida){entradaSaida='<span class="saida-badge">↑ Saída</span>';extraClasse=' saida';}
+    }
+
+    // linha resumo sub (local + pessoas)
+    const partes=[];
+    if(local)partes.push(local);
+    if(pessoas)partes.push(pessoas+'p');
+    if(lingua)partes.push(lingua);
+    if(pais)partes.push(pais);
+    const sub=partes.join(' · ');
+
     let grid='';
     if(local)grid+=`<div class="ev-item"><span class="k">Local</span><span class="v">${local}</span></div>`;
     if(pessoas)grid+=`<div class="ev-item"><span class="k">Pessoas</span><span class="v">${pessoas}</span></div>`;
@@ -353,14 +386,27 @@ function renderDia(){
     if(guia)grid+=`<div class="ev-item"><span class="k">Guia</span><span class="v">${guia}</span></div>`;
     if(noites&&tc==='dormida')grid+=`<div class="ev-item"><span class="k">Noites</span><span class="v">${noites}</span></div>`;
     if(pagar==='sim')grid+=`<div class="ev-item"><span class="k">A pagar</span><span class="v pagar">${valor?valor+' €':'Sim'}</span></div>`;
+
     const card=document.createElement('div');
-    card.className=`evento ${tc}`;
+    card.className=`evento ${tc}${extraClasse}`;
     card.innerHTML=`
-      <div class="ev-top"><span class="badge ${tipoBadge(tipo)}">${tipo}</span>${hora?`<span class="ev-hora">🕐 ${hora}</span>`:''}</div>
-      <div class="ev-nome">${nome}</div>
-      ${grid?`<div class="ev-grid">${grid}</div>`:''}
-      ${obs?`<div class="ev-obs"><strong>📝 Notas</strong>${obs}</div>`:''}
+      <div class="ev-linha">
+        <div class="ev-linha-esq">
+          <div class="ev-nome">${nome}</div>
+          ${sub?`<div class="ev-sub">${sub}</div>`:''}
+        </div>
+        <div class="ev-linha-dir">
+          ${entradaSaida}
+          <span class="badge ${tipoBadge(tipo)}">${tipo}</span>
+          ${hora?`<span class="ev-hora">${hora}</span>`:''}
+        </div>
+      </div>
+      <div class="ev-detalhe">
+        ${grid?`<div class="ev-grid">${grid}</div>`:''}
+        ${obs?`<div class="ev-obs"><strong>📝 Notas</strong>${obs}</div>`:''}
+      </div>
     `;
+    card.onclick=()=>card.classList.toggle('aberto');
     content.appendChild(card);
   }
 }
