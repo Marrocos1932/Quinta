@@ -233,32 +233,26 @@ function carregarManual(e){
 
 function parseDateStr(s){
   if(!s)return null;
-  const str=String(s).trim().toLowerCase();
-  // formato com ano explícito ex: "26-mai-2026"
-  const mAno=str.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)[-\/\s.](\d{4})/);
-  if(mAno){
-    const dia=parseInt(mAno[1]);
-    const mesStr=mAno[2].replace('.','').substring(0,3);
-    const mesIdx=MESES_MAP[mesStr];
-    const ano=parseInt(mAno[3]);
-    if(mesIdx!==undefined) return new Date(ano,mesIdx,dia);
-  }
-  // formato sem ano ex: "26-mai." — encontra a data futura mais próxima
-  const m=str.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)/);
-  if(m){
-    const dia=parseInt(m[1]);
-    const mesStr=m[2].replace('.','').substring(0,3);
+  const str=String(s).trim();
+  // formato 2026/05/24 ou 2026-05-24
+  const mISO=str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if(mISO) return new Date(parseInt(mISO[1]),parseInt(mISO[2])-1,parseInt(mISO[3]));
+  // formato 24/05/2026 ou 24-05-2026
+  const mPT=str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if(mPT) return new Date(parseInt(mPT[3]),parseInt(mPT[2])-1,parseInt(mPT[1]));
+  // formato "26-mai." ou "26-May"
+  const sl=str.toLowerCase();
+  const mMes=sl.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)/);
+  if(mMes){
+    const dia=parseInt(mMes[1]);
+    const mesStr=mMes[2].replace('.','').substring(0,3);
     const mesIdx=MESES_MAP[mesStr];
     if(mesIdx!==undefined){
-      // tenta ano atual, depois próximo ano — usa o mais próximo no futuro (ou menos no passado)
-      const anos=[hoje.getFullYear()-1, hoje.getFullYear(), hoje.getFullYear()+1];
-      let melhor=null;
+      const anos=[hoje.getFullYear()-1,hoje.getFullYear(),hoje.getFullYear()+1];
       for(const ano of anos){
         const d=new Date(ano,mesIdx,dia);
-        const diff=(d-hoje)/(1000*60*60*24);
-        if(diff>-60){melhor=d;break;} // aceita até 60 dias no passado
+        if((d-hoje)/(1000*60*60*24)>-60) return d;
       }
-      return melhor||new Date(hoje.getFullYear(),mesIdx,dia);
     }
   }
   const dt=new Date(str);return isNaN(dt)?null:dt;
