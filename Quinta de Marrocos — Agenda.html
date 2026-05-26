@@ -254,10 +254,10 @@ function parseDateStr(s){
   if(mPT) return new Date(parseInt(mPT[3]),parseInt(mPT[2])-1,parseInt(mPT[1]));
   // formato "26-mai." ou "26-May"
   const sl=str.toLowerCase();
-  const mMes=sl.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)/);
+  const mMes=sl.match(/^(\d{1,2})\s*[-.\/]\s*([a-záéíóúàèìòùâêîôûãõç.]+)/);
   if(mMes){
     const dia=parseInt(mMes[1]);
-    const mesStr=mMes[2].replace('.','').substring(0,3);
+    const mesStr=mMes[2].replace(/\./g,'').trim().substring(0,3);
     const mesIdx=MESES_MAP[mesStr];
     if(mesIdx!==undefined){
       return new Date(2026,mesIdx,dia);
@@ -278,10 +278,15 @@ function gerarSemana(base){
 function eventosDia(data){
   return marcacoes.filter(r=>{
     const dr=parseDateStr(r['Data']);if(!dr)return false;
-    const noites=parseInt(r['Noites'])||1;
+    const noites=Math.max(1,parseInt(String(r['Noites']).replace(/[^0-9]/g,''))||1);
     const tipo=String(r['Tipo de Evento']||'').toLowerCase();
-    if(tipo.includes('dormida')&&noites>1){
-      for(let i=0;i<noites;i++){const d=new Date(dr);d.setDate(dr.getDate()+i);if(mesmoDia(d,data))return true;}
+    if(tipo.includes('dormida')){
+      // mostrar no dia de entrada, dias intermédios E dia de saída
+      const dataSaida=new Date(dr.getFullYear(),dr.getMonth(),dr.getDate()+noites);
+      if(mesmoDia(dr,data))return true; // entrada
+      if(mesmoDia(dataSaida,data))return true; // saída
+      // dias intermédios
+      for(let i=1;i<noites;i++){const d=new Date(dr.getFullYear(),dr.getMonth(),dr.getDate()+i);if(mesmoDia(d,data))return true;}
       return false;
     }
     return mesmoDia(dr,data);
@@ -350,7 +355,7 @@ function renderDia(){
     const lingua=ev['Língua']||'';
     const pais=ev['País']||'';
     const agencia=ev['Agência']||'';
-    const noites=parseInt(ev['Noites'])||1;
+    const noites=Math.max(1,parseInt(String(ev['Noites']).replace(/[^0-9]/g,''))||1);
     const obs=ev['Observações']||'';
     const pagar=String(ev['Pagar na Quinta?']||'').toLowerCase();
     const valor=ev['Valor a Pagar (€)']||'';
@@ -360,9 +365,9 @@ function renderDia(){
     // calcular entrada/saída para dormidas
     let entradaSaida='';
     let extraClasse='';
-    if(tc==='dormida'&&dataEv){
+    if(tc==='dormida'&&dataEv&&noites>=1){
       const isEntrada=mesmoDia(dataEv,data);
-      const dataSaida=new Date(dataEv);dataSaida.setDate(dataEv.getDate()+noites);
+      const dataSaida=new Date(dataEv.getFullYear(),dataEv.getMonth(),dataEv.getDate()+noites);
       const isSaida=mesmoDia(dataSaida,data);
       if(isEntrada&&isSaida){entradaSaida='<span class="entrada-badge">↓ Entrada</span><span class="saida-badge">↑ Saída</span>';extraClasse=' entrada';}
       else if(isEntrada){entradaSaida='<span class="entrada-badge">↓ Entrada</span>';extraClasse=' entrada';}
