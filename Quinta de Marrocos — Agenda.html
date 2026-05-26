@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quinta de Marrocos — Agenda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#2D5016;--verde-m:#4A7A28;--verde-c:#8BAF5A;--verde-p:#EDF3E4;
+  --dourado:#C4973A;--dourado-c:#F5E8CC;--creme:#FAF7F2;
+  --cinza:#6B6B6B;--cinza-c:#E8E4DE;--branco:#FFFFFF;--texto:#1A1A1A;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{font-family:'DM Sans',sans-serif;background:var(--creme);color:var(--texto);}
+.header{background:var(--verde);padding:1rem 1.1rem .75rem;border-bottom:3px solid var(--dourado);position:sticky;top:0;z-index:100;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;}
+.header h1{font-family:'Playfair Display',serif;color:#fff;font-size:1.1rem;font-weight:600;}
+.data-hoje{color:var(--verde-c);font-size:.73rem;margin-top:1px;}
+.btn-reload{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;color:#fff;font-size:.72rem;font-weight:500;padding:.35rem .8rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.day-tabs{display:flex;overflow-x:auto;scrollbar-width:none;background:var(--verde);}
+.day-tabs::-webkit-scrollbar{display:none;}
+.day-tab{flex:0 0 auto;padding:.45rem .8rem;color:rgba(255,255,255,.55);font-size:.73rem;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;text-align:center;min-width:50px;transition:all .15s;}
+.day-tab.active{color:#fff;border-bottom-color:var(--dourado);}
+.day-tab.hoje-tab .dt-num{color:var(--dourado);}
+.day-tab .dt-num{font-size:1.05rem;font-weight:600;display:block;font-family:'Playfair Display',serif;}
+.day-tab .ev-dot{font-size:.6rem;display:block;margin-top:1px;color:rgba(255,255,255,.4);}
+.day-tab .ev-dot.tem{color:var(--dourado);}
+.content{padding:.85rem;max-width:520px;margin:0 auto;padding-bottom:72px;}
+.loading{text-align:center;padding:3rem 1rem;}
+.loading .spin{font-size:2rem;display:block;margin-bottom:.75rem;animation:spin 1.5s linear infinite;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.loading p{color:var(--cinza);font-size:.85rem;line-height:1.6;}
+.erro{background:#fff0f0;border:1.5px solid #f5c0c0;border-radius:12px;padding:1.25rem;text-align:center;margin-top:1rem;}
+.erro p{font-size:.82rem;color:#8B2020;line-height:1.6;margin-bottom:.75rem;}
+.btn-manual{background:var(--verde);color:#fff;border:none;border-radius:8px;padding:.6rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;}
+input[type=file]{display:none;}
+.dia-titulo{padding:.5rem 0 .75rem;}
+.dia-titulo h2{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--verde);}
+.dia-titulo .sub{font-size:.74rem;color:var(--cinza);margin-top:2px;}
+.sem-eventos{background:var(--branco);border:1.5px solid var(--cinza-c);border-radius:12px;padding:1.75rem;text-align:center;color:var(--cinza);font-size:.85rem;}
+.sem-eventos span{font-size:1.5rem;display:block;margin-bottom:.4rem;}
+.evento{background:var(--branco);border:1.5px solid var(--cinza-c);border-radius:12px;padding:.9rem 1rem;margin-bottom:.75rem;}
+.evento.dormida{border-left:4px solid #1A4A8A;}
+.evento.jantar{border-left:4px solid var(--dourado);}
+.evento.almoco{border-left:4px solid #8B4A1A;}
+.evento.visita{border-left:4px solid var(--verde-m);}
+.evento.prova{border-left:4px solid var(--verde-c);}
+.evento.outros{border-left:4px solid var(--cinza-c);}
+.ev-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:.5rem;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:500;}
+.bd{background:#E8F0FB;color:#1A4A8A;}
+.bj{background:var(--dourado-c);color:#7A5A10;}
+.ba{background:#FBF0E8;color:#8A4A1A;}
+.bv{background:var(--verde-p);color:var(--verde);}
+.bp{background:#F0F8E8;color:#3A6010;}
+.bo{background:var(--cinza-c);color:var(--cinza);}
+.ev-hora{font-size:.75rem;color:var(--cinza);font-weight:500;white-space:nowrap;}
+.ev-nome{font-size:.95rem;font-weight:500;color:var(--texto);margin-bottom:.5rem;font-family:'Playfair Display',serif;}
+.ev-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem .6rem;}
+.ev-item{font-size:.76rem;}
+.ev-item .k{color:var(--cinza);font-size:.68rem;display:block;}
+.ev-item .v{color:var(--texto);font-weight:500;}
+.ev-obs{margin-top:.6rem;background:var(--dourado-c);border-radius:8px;padding:.5rem .65rem;font-size:.74rem;color:#5A4010;line-height:1.5;}
+.ev-obs strong{display:block;margin-bottom:.15rem;font-size:.7rem;}
+.pagar{color:var(--dourado);font-weight:600;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--verde);padding:.55rem 1rem;display:flex;justify-content:center;gap:.5rem;border-top:2px solid var(--dourado);}
+.nav-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:.5rem 1.1rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;}
+.nav-btn.hoje{background:var(--dourado);}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>🍷 Quinta de Marrocos</h1>
+      <div class="data-hoje" id="dataHoje"></div>
+    </div>
+    <button class="btn-reload" onclick="carregarDados()">↻ Atualizar</button>
+    <input type="file" id="fileManual" accept=".xls,.xlsx,.csv" onchange="carregarManual(event)">
+  </div>
+  <div class="day-tabs" id="dayTabs"></div>
+</div>
+<div class="content" id="content">
+  <div class="loading"><span class="spin">🍷</span><p>A carregar marcações...</p></div>
+</div>
+<div class="bottom-nav">
+  <button class="nav-btn" onclick="navDia(-1)">← Anterior</button>
+  <button class="nav-btn hoje" onclick="irHoje()">Hoje</button>
+  <button class="nav-btn" onclick="navDia(1)">Próximo →</button>
+</div>
+<script>
+const DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES_MAP={
+  'jan':0,'fev':1,'feb':1,'mar':2,'abr':3,'apr':3,'mai':4,'may':4,'jun':5,
+  'jul':6,'ago':7,'aug':7,'set':8,'sep':8,'out':9,'oct':9,'nov':10,'dez':11,'dec':11
+};
+
+const CSV_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vRN8_dsxsb7PrrtmTNjntKvZHI3rzHAk8sQlJoYYJ-LM22jD2NpY4c-Q94VIziO0-_KKBrfZNqMBMI-/pub?gid=365896877&single=true&output=csv';
+
+let marcacoes=[];
+let semana=[];
+let diaAtivo=0;
+const hoje=new Date();
+
+document.getElementById('dataHoje').textContent=
+  DIAS[hoje.getDay()]+', '+hoje.getDate()+' de '+MESES[hoje.getMonth()]+' de '+hoje.getFullYear();
+
+async function carregarDados(){
+  document.getElementById('content').innerHTML='<div class="loading"><span class="spin">🍷</span><p>A carregar marcações...</p></div>';
+  try{
+    const resp=await fetch(CSV_URL);
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const text=await resp.text();
+    processarCSV(text);
+  }catch(e){ mostrarErro(e.message); }
+}
+
+function parseCSV(text){
+  const lines=text.split('\n');
+  const result=[];
+  for(const line of lines){
+    const row=[];
+    let cur='';let inQ=false;
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c==='"'){
+        if(inQ&&line[i+1]==='"'){cur+='"';i++;}
+        else inQ=!inQ;
+      } else if(c===','&&!inQ){
+        row.push(cur.trim());cur='';
+      } else cur+=c;
+    }
+    row.push(cur.trim());
+    result.push(row);
+  }
+  return result;
+}
+
+function processarCSV(text){
+  const aoa=parseCSV(text);
+  if(aoa.length<2){mostrarErro('Ficheiro vazio');return;}
+
+  // primeira linha é o cabeçalho
+  const headers=aoa[0].map(h=>h.trim());
+  const colMap={};
+  headers.forEach((h,i)=>{if(h) colMap[h]=i;});
+
+  const get=(row,col)=>colMap[col]!==undefined?String(row[colMap[col]]||'').trim():'';
+
+  const rows=[];
+  let ultimaData='';
+  for(let i=1;i<aoa.length;i++){
+    const row=aoa[i];
+    if(row.every(c=>!c)) continue;
+    let data=get(row,'Data');
+    if(data) ultimaData=data; else data=ultimaData;
+    const tipo=get(row,'Tipo de Evento');
+    if(!data||!tipo) continue;
+    rows.push({
+      'Data':data,'Tipo de Evento':tipo,
+      'Responsável':get(row,'Responsável'),
+      'Agência':get(row,'Agência'),
+      'Clientes':get(row,'Clientes'),
+      'Guia/Motorista':get(row,'Guia/Motorista'),
+      'Língua':get(row,'Língua'),
+      'Horário':get(row,'Horário'),
+      'Local':get(row,'Local'),
+      'Noites':get(row,'Noites'),
+      'País':get(row,'País'),
+      'Pagar na Quinta?':get(row,'Pagar na Quinta?'),
+      'Valor a Pagar (€)':get(row,'Valor a Pagar (€)'),
+      'Observações':get(row,'Observações'),
+    });
+  }
+  marcacoes=rows;
+  gerarSemana(hoje);
+  diaAtivo=0;
+  renderTabs();
+  renderDia();
+}
+
+function mostrarErro(msg){
+  document.getElementById('content').innerHTML=`
+    <div class="erro">
+      <p>Não foi possível carregar automaticamente.<br><small>${msg||''}</small><br><br>
+      Em alternativa, carrega o ficheiro Excel manualmente:</p>
+      <button class="btn-manual" onclick="document.getElementById('fileManual').click()">📂 Carregar ficheiro</button>
+    </div>`;
+}
+
+function carregarManual(e){
+  const file=e.target.files[0]; if(!file) return;
+  document.getElementById('content').innerHTML='<div class="loading"><span class="spin">🍷</span><p>A processar...</p></div>';
+  const reader=new FileReader();
+  if(file.name.endsWith('.csv')){
+    reader.onload=ev=>processarCSV(ev.target.result);
+    reader.readAsText(file);
+  } else {
+    reader.onload=ev=>{
+      const script=document.createElement('script');
+      script.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      script.onload=()=>{
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellDates:true});
+        const sn=wb.SheetNames.find(n=>n.toLowerCase().includes('marca'))||wb.SheetNames[0];
+        const aoa=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+        // encontrar cabeçalho
+        let hi=-1;
+        for(let i=0;i<Math.min(aoa.length,10);i++){
+          if(aoa[i].some(c=>String(c).trim()==='Data')&&aoa[i].some(c=>String(c).trim()==='Tipo de Evento')){hi=i;break;}
+        }
+        if(hi===-1){mostrarErro('Cabeçalho não encontrado');return;}
+        const headers=aoa[hi].map(h=>String(h).trim());
+        const cm={};headers.forEach((h,i)=>{if(h)cm[h]=i;});
+        const get=(row,col)=>cm[col]!==undefined?String(row[cm[col]]||'').trim():'';
+        const rows=[];let ud='';
+        for(let i=hi+1;i<aoa.length;i++){
+          const row=aoa[i];
+          if(row.every(c=>String(c).trim()===''))continue;
+          let data=get(row,'Data');if(data)ud=data;else data=ud;
+          const tipo=get(row,'Tipo de Evento');
+          if(!data||!tipo)continue;
+          rows.push({'Data':data,'Tipo de Evento':tipo,'Responsável':get(row,'Responsável'),'Agência':get(row,'Agência'),'Clientes':get(row,'Clientes'),'Guia/Motorista':get(row,'Guia/Motorista'),'Língua':get(row,'Língua'),'Horário':get(row,'Horário'),'Local':get(row,'Local'),'Noites':get(row,'Noites'),'País':get(row,'País'),'Pagar na Quinta?':get(row,'Pagar na Quinta?'),'Valor a Pagar (€)':get(row,'Valor a Pagar (€)'),'Observações':get(row,'Observações')});
+        }
+        marcacoes=rows;gerarSemana(hoje);diaAtivo=0;renderTabs();renderDia();
+      };
+      document.head.appendChild(script);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function parseDateStr(s){
+  if(!s)return null;
+  const str=String(s).trim().toLowerCase();
+  const m=str.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)/);
+  if(m){
+    const dia=parseInt(m[1]);
+    const mesStr=m[2].replace('.','').substring(0,3);
+    const mesIdx=MESES_MAP[mesStr];
+    if(mesIdx!==undefined){
+      const dEsteAno=new Date(hoje.getFullYear(),mesIdx,dia);
+      const diff=(dEsteAno-hoje)/(1000*60*60*24);
+      return diff>-180?dEsteAno:new Date(hoje.getFullYear()+1,mesIdx,dia);
+    }
+  }
+  const dt=new Date(str);return isNaN(dt)?null:dt;
+}
+
+function mesmoDia(a,b){
+  return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+}
+
+function gerarSemana(base){
+  semana=[];
+  for(let i=0;i<7;i++){const d=new Date(base);d.setDate(base.getDate()+i);semana.push(d);}
+}
+
+function eventosDia(data){
+  return marcacoes.filter(r=>{
+    const dr=parseDateStr(r['Data']);if(!dr)return false;
+    const noites=parseInt(r['Noites'])||1;
+    const tipo=String(r['Tipo de Evento']||'').toLowerCase();
+    if(tipo.includes('dormida')&&noites>1){
+      for(let i=0;i<noites;i++){const d=new Date(dr);d.setDate(dr.getDate()+i);if(mesmoDia(d,data))return true;}
+      return false;
+    }
+    return mesmoDia(dr,data);
+  });
+}
+
+function renderTabs(){
+  const tabs=document.getElementById('dayTabs');
+  tabs.innerHTML='';
+  semana.forEach((d,i)=>{
+    const n=eventosDia(d).length;
+    const isH=mesmoDia(d,hoje);
+    const tab=document.createElement('div');
+    tab.className='day-tab'+(i===diaAtivo?' active':'')+(isH?' hoje-tab':'');
+    tab.innerHTML=`<span class="dt-num">${d.getDate()}</span>${DIAS[d.getDay()]}<span class="ev-dot${n>0?' tem':''}">${n>0?'●'.repeat(Math.min(n,3)):''}</span>`;
+    tab.onclick=()=>{diaAtivo=i;renderTabs();renderDia();};
+    tabs.appendChild(tab);
+  });
+}
+
+function tipoClasse(t){
+  const s=String(t).toLowerCase();
+  if(s.includes('dormida'))return'dormida';
+  if(s.includes('jantar'))return'jantar';
+  if(s.includes('almoço')||s.includes('almoco'))return'almoco';
+  if(s.includes('prova'))return'prova';
+  if(s.includes('visita'))return'visita';
+  return'outros';
+}
+function tipoBadge(t){
+  return{dormida:'bd',jantar:'bj',almoco:'ba',visita:'bv',prova:'bp',outros:'bo'}[tipoClasse(t)]||'bo';
+}
+
+function renderDia(){
+  const content=document.getElementById('content');
+  content.innerHTML='';
+  const data=semana[diaAtivo];
+  const evs=eventosDia(data);
+  const isH=mesmoDia(data,hoje);
+  const titulo=document.createElement('div');
+  titulo.className='dia-titulo';
+  titulo.innerHTML=`<h2>${isH?'<span style="color:var(--dourado)">Hoje · </span>':''}${DIAS[data.getDay()]}, ${data.getDate()} de ${MESES[data.getMonth()]}</h2><div class="sub">${evs.length===0?'Sem eventos':evs.length+' evento'+(evs.length!==1?'s':'')}</div>`;
+  content.appendChild(titulo);
+  if(evs.length===0){
+    const v=document.createElement('div');v.className='sem-eventos';
+    v.innerHTML='<span>🌿</span>Dia sem eventos marcados';
+    content.appendChild(v);return;
+  }
+  evs.sort((a,b)=>{
+    const ta=String(a['Tipo de Evento']||'').toLowerCase();
+    const tb=String(b['Tipo de Evento']||'').toLowerCase();
+    const ha=a['Horário']||'';const hb=b['Horário']||'';
+    if(ta.includes('dormida')&&!tb.includes('dormida'))return -1;
+    if(!ta.includes('dormida')&&tb.includes('dormida'))return 1;
+    if(ha&&hb)return ha.localeCompare(hb);
+    if(ha)return -1;if(hb)return 1;
+    return 0;
+  });
+  for(const ev of evs){
+    const tipo=ev['Tipo de Evento']||'';
+    const tc=tipoClasse(tipo);
+    const nome=ev['Responsável']||'—';
+    const hora=ev['Horário']||'';
+    const local=ev['Local']||'';
+    const pessoas=ev['Clientes']||'';
+    const lingua=ev['Língua']||'';
+    const pais=ev['País']||'';
+    const agencia=ev['Agência']||'';
+    const noites=ev['Noites']||'';
+    const obs=ev['Observações']||'';
+    const pagar=String(ev['Pagar na Quinta?']||'').toLowerCase();
+    const valor=ev['Valor a Pagar (€)']||'';
+    const guia=ev['Guia/Motorista']||'';
+    let grid='';
+    if(local)grid+=`<div class="ev-item"><span class="k">Local</span><span class="v">${local}</span></div>`;
+    if(pessoas)grid+=`<div class="ev-item"><span class="k">Pessoas</span><span class="v">${pessoas}</span></div>`;
+    if(lingua)grid+=`<div class="ev-item"><span class="k">Língua</span><span class="v">${lingua}</span></div>`;
+    if(pais)grid+=`<div class="ev-item"><span class="k">País</span><span class="v">${pais}</span></div>`;
+    if(agencia)grid+=`<div class="ev-item"><span class="k">Agência</span><span class="v">${agencia}</span></div>`;
+    if(guia)grid+=`<div class="ev-item"><span class="k">Guia</span><span class="v">${guia}</span></div>`;
+    if(noites&&tc==='dormida')grid+=`<div class="ev-item"><span class="k">Noites</span><span class="v">${noites}</span></div>`;
+    if(pagar==='sim')grid+=`<div class="ev-item"><span class="k">A pagar</span><span class="v pagar">${valor?valor+' €':'Sim'}</span></div>`;
+    const card=document.createElement('div');
+    card.className=`evento ${tc}`;
+    card.innerHTML=`
+      <div class="ev-top"><span class="badge ${tipoBadge(tipo)}">${tipo}</span>${hora?`<span class="ev-hora">🕐 ${hora}</span>`:''}</div>
+      <div class="ev-nome">${nome}</div>
+      ${grid?`<div class="ev-grid">${grid}</div>`:''}
+      ${obs?`<div class="ev-obs"><strong>📝 Notas</strong>${obs}</div>`:''}
+    `;
+    content.appendChild(card);
+  }
+}
+
+function navDia(d){
+  const novo=diaAtivo+d;
+  if(novo>=0&&novo<7){diaAtivo=novo;}
+  else{const b=new Date(semana[0]);b.setDate(b.getDate()+d*7);gerarSemana(b);diaAtivo=d>0?0:6;}
+  renderTabs();renderDia();
+  document.getElementById('dayTabs').querySelectorAll('.day-tab')[diaAtivo]?.scrollIntoView({behavior:'smooth',inline:'center'});
+}
+
+function irHoje(){gerarSemana(hoje);diaAtivo=0;renderTabs();renderDia();}
+
+carregarDados();
+</script>
+</body>
+</html>
