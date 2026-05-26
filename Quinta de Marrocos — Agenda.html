@@ -234,15 +234,31 @@ function carregarManual(e){
 function parseDateStr(s){
   if(!s)return null;
   const str=String(s).trim().toLowerCase();
+  // formato com ano explícito ex: "26-mai-2026"
+  const mAno=str.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)[-\/\s.](\d{4})/);
+  if(mAno){
+    const dia=parseInt(mAno[1]);
+    const mesStr=mAno[2].replace('.','').substring(0,3);
+    const mesIdx=MESES_MAP[mesStr];
+    const ano=parseInt(mAno[3]);
+    if(mesIdx!==undefined) return new Date(ano,mesIdx,dia);
+  }
+  // formato sem ano ex: "26-mai." — encontra a data futura mais próxima
   const m=str.match(/^(\d{1,2})[-\/\s.]([a-záéíóúàèìòùâêîôûãõç]+)/);
   if(m){
     const dia=parseInt(m[1]);
     const mesStr=m[2].replace('.','').substring(0,3);
     const mesIdx=MESES_MAP[mesStr];
     if(mesIdx!==undefined){
-      const dEsteAno=new Date(hoje.getFullYear(),mesIdx,dia);
-      const diff=(dEsteAno-hoje)/(1000*60*60*24);
-      return diff>-180?dEsteAno:new Date(hoje.getFullYear()+1,mesIdx,dia);
+      // tenta ano atual, depois próximo ano — usa o mais próximo no futuro (ou menos no passado)
+      const anos=[hoje.getFullYear()-1, hoje.getFullYear(), hoje.getFullYear()+1];
+      let melhor=null;
+      for(const ano of anos){
+        const d=new Date(ano,mesIdx,dia);
+        const diff=(d-hoje)/(1000*60*60*24);
+        if(diff>-60){melhor=d;break;} // aceita até 60 dias no passado
+      }
+      return melhor||new Date(hoje.getFullYear(),mesIdx,dia);
     }
   }
   const dt=new Date(str);return isNaN(dt)?null:dt;
