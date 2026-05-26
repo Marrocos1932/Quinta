@@ -112,7 +112,8 @@ async function carregarDados(){
   try{
     const resp=await fetch(CSV_URL);
     if(!resp.ok) throw new Error('HTTP '+resp.status);
-    const text=await resp.text();
+    const buffer=await resp.arrayBuffer();
+    const text=new TextDecoder("utf-8").decode(buffer);
     processarCSV(text);
   }catch(e){ mostrarErro(e.message); }
 }
@@ -248,11 +249,7 @@ function parseDateStr(s){
     const mesStr=mMes[2].replace('.','').substring(0,3);
     const mesIdx=MESES_MAP[mesStr];
     if(mesIdx!==undefined){
-      const anos=[hoje.getFullYear()-1,hoje.getFullYear(),hoje.getFullYear()+1];
-      for(const ano of anos){
-        const d=new Date(ano,mesIdx,dia);
-        if((d-hoje)/(1000*60*60*24)>-60) return d;
-      }
+      return new Date(2026,mesIdx,dia);
     }
   }
   const dt=new Date(str);return isNaN(dt)?null:dt;
