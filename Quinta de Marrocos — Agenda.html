@@ -146,7 +146,8 @@ const MESES_MAP={
   'jul':6,'ago':7,'aug':7,'set':8,'sep':8,'out':9,'oct':9,'nov':10,'dez':11,'dec':11
 };
 
-const CSV_URL='https://script.google.com/macros/s/AKfycbzd-kDBGio2SKgeuDkcz6Kc1hVZrEZWeZiLYTtEI6eCx9NR6wlWzi76Q_bQ_94wX_ZvSg/exec';
+const SB_URL='https://larfawiuvojqodbtgedy.supabase.co';
+const SB_KEY='sb_publishable_Guqk02UALbP24zB0zlLeRw_0J04jwyn';
 
 let marcacoes=[];
 let semana=[];
@@ -159,12 +160,37 @@ document.getElementById('dataHoje').textContent=
 async function carregarDados(){
   document.getElementById('content').innerHTML='<div class="loading"><span class="spin">🍷</span><p>A carregar marcações...</p></div>';
   try{
-    const resp=await fetch(CSV_URL);
+    const resp=await fetch(SB_URL+'/rest/v1/marcacoes?order=data.asc&select=*&limit=2000',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
     if(!resp.ok) throw new Error('HTTP '+resp.status);
-    const buffer=await resp.arrayBuffer();
-    const text=new TextDecoder("utf-8").decode(buffer);
-    processarCSV(text);
+    const dados=await resp.json();
+    processarSupabase(dados);
   }catch(e){ mostrarErro(e.message); }
+}
+
+function processarSupabase(dados){
+  const rows=dados.map(m=>({
+    'Data': m.data||'',
+    'Tipo de Evento': m.tipo_evento||'',
+    'Responsável': m.responsavel||'',
+    'Agência': m.agencia||'',
+    'Clientes': m.clientes?String(m.clientes):'',
+    'Guia/Motorista': m.guia_motorista||'',
+    'Língua': m.lingua||'',
+    'Horário': m.horario||'',
+    'Local': m.local||'',
+    'Noites': m.noites?String(m.noites):'',
+    'País': m.pais||'',
+    'Pagar na Quinta?': m.pagar_na_quinta?'Sim':'Não',
+    'Valor a Pagar (€)': m.valor_a_pagar?String(m.valor_a_pagar):'',
+    'Observações': m.observacoes||'',
+  }));
+  marcacoes=rows;
+  gerarSemana(hoje);
+  diaAtivo=0;
+  renderTabs();
+  renderDia();
 }
 
 function parseCSV(text){
