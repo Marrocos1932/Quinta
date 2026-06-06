@@ -458,22 +458,23 @@ function renderDia(){
 
     const card=document.createElement('div');
     card.className=`evento ${tc}${extraClasse}`;
-    const agenciaBadge = agencia ? `<span style="font-size:.72rem;color:var(--cinza);margin-top:2px">${agencia}</span>` : '';
-    const valorBadge = (pagar==='sim'&&valor) ? `<span style="font-size:.75rem;font-weight:600;color:var(--dourado);margin-left:6px">${valor} €</span>` : (pagar==='sim' ? `<span style="font-size:.75rem;font-weight:600;color:var(--dourado);margin-left:6px">A pagar</span>` : '');
+    const valorStr = (pagar==='sim'&&valor) ? valor+' €' : (pagar==='sim' ? 'A pagar' : '');
     card.innerHTML=`
       <div class="ev-linha">
         <div class="ev-linha-esq">
           <div class="ev-nome">${nome}</div>
           ${sub?`<div class="ev-sub">${sub}</div>`:''}
-          ${agenciaBadge}
         </div>
         <div class="ev-linha-dir">
           ${entradaSaida}
           <span class="badge ${tipoBadge(tipo)}">${tipo}</span>
           ${hora?`<span class="ev-hora">${hora}</span>`:''}
-          ${valorBadge}
         </div>
       </div>
+      ${(agencia||valorStr)?`<div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        ${agencia?`<span style="font-size:.72rem;color:var(--cinza);">${agencia}</span>`:''}
+        ${valorStr?`<span style="font-size:.72rem;font-weight:600;color:var(--dourado);">💶 ${valorStr}</span>`:''}
+      </div>`:''}
       <div class="ev-detalhe">
         ${grid?`<div class="ev-grid">${grid}</div>`:''}
         ${obs?`<div class="ev-obs"><strong>📝 Notas</strong>${obs}</div>`:''}
