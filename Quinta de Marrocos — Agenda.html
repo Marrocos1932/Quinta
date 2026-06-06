@@ -488,6 +488,8 @@ function navDia(d){
   // scroll horizontal só dentro dos tabs, sem mover a página
   const tabEl = document.getElementById('dayTabs').querySelectorAll('.day-tab')[diaAtivo];
   if(tabEl){ const cont=document.getElementById('dayTabs'); cont.scrollLeft=tabEl.offsetLeft-cont.offsetWidth/2+tabEl.offsetWidth/2; }
+  // manter o topo da página visível
+  window.scrollTo({top:0, behavior:'instant'});
 }
 
 function irHoje(){gerarSemana(hoje);diaAtivo=0;renderTabs();renderDia();}
