@@ -485,7 +485,9 @@ function navDia(d){
   if(novo>=0&&novo<7){diaAtivo=novo;}
   else{const b=new Date(semana[0]);b.setDate(b.getDate()+d*7);gerarSemana(b);diaAtivo=d>0?0:6;}
   renderTabs();renderDia();
-  document.getElementById('dayTabs').querySelectorAll('.day-tab')[diaAtivo]?.scrollIntoView({behavior:'smooth',inline:'center'});
+  // scroll horizontal só dentro dos tabs, sem mover a página
+  const tabEl = document.getElementById('dayTabs').querySelectorAll('.day-tab')[diaAtivo];
+  if(tabEl){ const cont=document.getElementById('dayTabs'); cont.scrollLeft=tabEl.offsetLeft-cont.offsetWidth/2+tabEl.offsetWidth/2; }
 }
 
 function irHoje(){gerarSemana(hoje);diaAtivo=0;renderTabs();renderDia();}
