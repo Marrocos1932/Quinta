@@ -458,16 +458,20 @@ function renderDia(){
 
     const card=document.createElement('div');
     card.className=`evento ${tc}${extraClasse}`;
+    const agenciaBadge = agencia ? `<span style="font-size:.72rem;color:var(--cinza);margin-top:2px">${agencia}</span>` : '';
+    const valorBadge = (pagar==='sim'&&valor) ? `<span style="font-size:.75rem;font-weight:600;color:var(--dourado);margin-left:6px">${valor} €</span>` : (pagar==='sim' ? `<span style="font-size:.75rem;font-weight:600;color:var(--dourado);margin-left:6px">A pagar</span>` : '');
     card.innerHTML=`
       <div class="ev-linha">
         <div class="ev-linha-esq">
           <div class="ev-nome">${nome}</div>
           ${sub?`<div class="ev-sub">${sub}</div>`:''}
+          ${agenciaBadge}
         </div>
         <div class="ev-linha-dir">
           ${entradaSaida}
           <span class="badge ${tipoBadge(tipo)}">${tipo}</span>
           ${hora?`<span class="ev-hora">${hora}</span>`:''}
+          ${valorBadge}
         </div>
       </div>
       <div class="ev-detalhe">
