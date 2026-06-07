@@ -661,23 +661,18 @@
   function irParaHoje() { semanaOffset = 0; renderSemana(); }
 
   // ── TIMELINE HELPERS ──
-  const TL_BLOCKS = null; // escala contínua
   const TL_START = 7.5;
   const TL_END = 21.5;
-  const TL_PPH = 30; // píxeis por hora
-  const TL_H = TL_BLOCKS.reduce((s, b) => s + b.px, 0);
+  const TL_PPH = 30;
+  const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
 
   function tlTop(h) {
-    let y = 0;
-    for (const b of TL_BLOCKS) {
-      if (b.skip) { y += b.px; continue; }
-      if (h <= b.end) return y + Math.round((Math.max(h, b.start) - b.start) / (b.end - b.start) * b.px);
-      y += b.px;
-    }
-    return y;
+    return Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
   }
 
-  function tlHeight(h1, h2) { return Math.max(16, tlTop(h2) - tlTop(h1)); }
+  function tlHeight(h1, h2) {
+    return Math.max(16, Math.round((Math.min(TL_END, h2) - Math.max(TL_START, h1)) * TL_PPH));
+  }
 
   function parseHora(s) {
     if (!s) return null;
@@ -765,21 +760,12 @@
       zonaTL.style.height = TL_H + 'px';
       zonaTL.style.flexShrink = '0';
 
-      // Linhas de hora e skips
-      let cy = 0;
-      TL_BLOCKS.forEach(b => {
-        if (b.skip) {
-          const sl = document.createElement('div'); sl.className = 'tl-skip-line'; sl.style.top = cy + 'px'; zonaTL.appendChild(sl);
-          const lb = document.createElement('div'); lb.className = 'tl-skip-label'; lb.style.top = (cy + 2) + 'px'; lb.textContent = '···'; zonaTL.appendChild(lb);
-          cy += b.px; return;
-        }
-        for (let h = Math.ceil(b.start); h <= Math.floor(b.end); h++) {
-          const t = cy + Math.round((h - b.start) / (b.end - b.start) * b.px);
-          const line = document.createElement('div'); line.className = 'tl-hour-line'; line.style.top = t + 'px'; zonaTL.appendChild(line);
-          const lbl = document.createElement('div'); lbl.className = 'tl-hour-label'; lbl.style.top = t + 'px'; lbl.textContent = h + 'h'; zonaTL.appendChild(lbl);
-        }
-        cy += b.px;
-      });
+      // Linhas de hora contínuas
+      for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
+        const t = tlTop(h);
+        const line = document.createElement('div'); line.className = 'tl-hour-line'; line.style.top = t + 'px'; zonaTL.appendChild(line);
+        const lbl = document.createElement('div'); lbl.className = 'tl-hour-label'; lbl.style.top = t + 'px'; lbl.textContent = h + 'h'; zonaTL.appendChild(lbl);
+      }
 
       // Peq. almoço
       if (paxPeqAlmoco > 0) {
