@@ -309,11 +309,9 @@
         <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
       </div>
       <!-- Timeline com scroll -->
-      <div style="flex:1;overflow-y:auto;position:relative" id="semana-outer">
-        <div style="display:grid;grid-template-columns:28px repeat(7,1fr);min-height:100%" id="semana-inner-grid">
-          <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative"></div>
-          <div id="semana-grid" style="display:contents"></div>
-        </div>
+      <div style="flex:1;overflow-y:auto;display:grid;grid-template-columns:28px repeat(7,1fr);align-content:start" id="semana-outer">
+        <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative;grid-row:1"></div>
+        <div id="semana-grid" style="display:contents"></div>
       </div>
       <!-- Separador alojamento -->
       <div style="border-top:2px solid var(--borda);background:var(--creme);font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;flex-shrink:0">Alojamento</div>
