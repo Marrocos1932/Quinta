@@ -699,10 +699,24 @@
       Object.values(dormidas.checkout).forEach(lista => lista.forEach(m => paxPA += (m.clientes||0)));
 
       // ── TIMELINE ──
-      const TL_START = 8, TL_END = 20, TL_PPH = 32;
-      const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
-      const tlTop = h => Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
-      const tlH = (h1,h2) => Math.max(16, Math.round((Math.min(TL_END,h2)-Math.max(TL_START,h1))*TL_PPH));
+      // Timeline com blocos: 07:30-09:00, salto, 10:00-20:30
+      const TL_BLOCKS = [
+        { start: 7.5,  end: 9.0,  px: 36 },
+        { skip: true,  px: 8 },
+        { start: 10.0, end: 20.5, px: 336 },
+      ];
+      const TL_H = TL_BLOCKS.reduce((s,b) => s+b.px, 0);
+      const tlTop = h => {
+        let y = 0;
+        for (const b of TL_BLOCKS) {
+          if (b.skip) { y += b.px; continue; }
+          if (h <= b.end) return y + Math.round((Math.max(h, b.start) - b.start) / (b.end - b.start) * b.px);
+          y += b.px;
+        }
+        return y;
+      };
+      const tlH = (h1, h2) => Math.max(16, tlTop(Math.min(h2, 20.5)) - tlTop(Math.max(h1, 7.5)));
+      const TL_START = 7.5, TL_END = 20.5;
       const tlCls = tipo => {
         if (!tipo) return 'tl-ev-outro';
         const t = tipo.toLowerCase();
@@ -722,18 +736,33 @@
       zonaTL.className = 'dia-zona-timeline';
       zonaTL.style.height = TL_H + 'px';
 
-      // Linhas de hora
-      for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
-        const t = tlTop(h);
-        const ln = document.createElement('div'); ln.className='tl-hour-line'; ln.style.top=t+'px'; zonaTL.appendChild(ln);
-        const lb = document.createElement('div'); lb.className='tl-hour-lbl'; lb.style.top=t+'px'; lb.textContent=h+'h'; zonaTL.appendChild(lb);
+      // Linhas de hora usando blocos
+      let tlY = 0;
+      for (const b of TL_BLOCKS) {
+        if (b.skip) {
+          // linha tracejada de salto
+          const sl = document.createElement('div');
+          sl.style.cssText = `position:absolute;left:0;right:0;border-top:1px dashed var(--borda);opacity:.5;top:${tlY}px`;
+          zonaTL.appendChild(sl);
+          const slb = document.createElement('div');
+          slb.style.cssText = `position:absolute;left:0;right:0;font-size:7px;color:var(--texto-muted);text-align:center;top:${tlY+1}px`;
+          slb.textContent = '···';
+          zonaTL.appendChild(slb);
+          tlY += b.px; continue;
+        }
+        for (let h = Math.ceil(b.start); h <= Math.floor(b.end); h++) {
+          const t = tlY + Math.round((h - b.start) / (b.end - b.start) * b.px);
+          const ln = document.createElement('div'); ln.className='tl-hour-line'; ln.style.top=t+'px'; zonaTL.appendChild(ln);
+          const lb = document.createElement('div'); lb.className='tl-hour-lbl'; lb.style.top=t+'px'; lb.textContent=h+'h'; zonaTL.appendChild(lb);
+        }
+        tlY += b.px;
       }
 
       // Peq. almoço automático
       if (paxPA > 0) {
         const ev = document.createElement('div');
         ev.className = 'tl-ev tl-ev-pax';
-        ev.style.cssText = `top:${tlTop(8)}px;height:${tlH(8,8.5)}px;left:20px;right:2px`;
+        ev.style.cssText = `top:${tlTop(8)}px;height:${tlH(8,9)}px;left:20px;right:2px`;
         ev.innerHTML = `<div class="tl-ev-tipo">Peq. almoço</div><div class="tl-ev-det">${paxPA} pessoa${paxPA>1?'s':''}</div>`;
         ev.onclick = () => abrirDetalhesDia(iso, d);
         zonaTL.appendChild(ev);
