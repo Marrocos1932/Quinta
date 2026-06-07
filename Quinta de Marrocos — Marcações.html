@@ -261,10 +261,10 @@
 </div>
 
 <!-- APP -->
-<div id="app" style="display:flex;flex-direction:row;height:100vh;width:100vw;overflow:hidden;position:fixed;top:0;left:0">
+<div id="app" style="display:flex;flex-direction:row;position:fixed;inset:0;overflow:hidden">
 
   <!-- SIDEBAR -->
-  <div id="sidebar" style="width:130px;height:100%;background:var(--creme);border-right:1px solid var(--borda);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto">
+  <div id="sidebar" style="width:130px;background:var(--creme);border-right:1px solid var(--borda);display:flex;flex-direction:column;flex-shrink:0">
     <div style="padding:12px 10px 10px;border-bottom:1px solid var(--borda)">
       <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--verde);line-height:1.2">Quinta de Marrocos</div>
       <div style="font-size:9px;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px">Marcações</div>
@@ -281,7 +281,7 @@
         <button class="btn-hoje" onclick="irParaHoje()" style="flex:1;padding:4px;font-size:11px">Hoje</button>
         <button class="btn-nav" onclick="navegarSemana(1)" style="flex:1;padding:4px;font-size:11px">→</button>
       </div>
-      <div class="semana-titulo" id="semana-titulo" style="font-size:11px;font-weight:500;color:var(--verde);text-align:center"></div>
+      <div id="semana-titulo" style="font-size:11px;font-weight:500;color:var(--verde);text-align:center"></div>
     </div>
     <div style="border-top:1px solid var(--borda);padding:8px 10px;flex:1">
       <div style="font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Legenda</div>
@@ -293,25 +293,26 @@
         <div class="leg-item"><div style="width:10px;height:10px;border-radius:2px;background:#f1efe8;border-left:2px solid #5f5e5a;flex-shrink:0"></div>Outros</div>
       </div>
     </div>
-    <div style="padding:10px">
+    <div style="padding:10px;margin-top:auto">
       <button class="btn-nova" onclick="abrirModal()" style="width:100%;font-size:12px;padding:8px 6px">+ Nova marcação</button>
     </div>
   </div>
 
   <!-- CONTEÚDO PRINCIPAL -->
-  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0">
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
 
   <!-- VISTA SEMANAL -->
-  <div id="vista-semana" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <div id="vista-semana" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
       <!-- Headers dos dias -->
       <div style="display:grid;grid-template-columns:28px repeat(7,1fr);flex-shrink:0;border-bottom:1px solid var(--borda)" id="semana-headers">
         <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
       </div>
       <!-- Timeline com scroll -->
-      <div style="flex:1;overflow-y:auto;display:grid;grid-template-columns:28px repeat(7,1fr);align-content:start" id="semana-outer">
-        <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative;grid-row:1"></div>
-        <div id="semana-grid" style="display:contents"></div>
+      <div style="flex:1;overflow-y:auto;min-height:0" id="semana-outer">
+        <div style="display:grid;grid-template-columns:28px repeat(7,1fr)" id="semana-inner">
+          <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative"></div>
+          <div id="semana-grid"></div>
+        </div>
       </div>
       <!-- Separador alojamento -->
       <div style="border-top:2px solid var(--borda);background:var(--creme);font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;flex-shrink:0">Alojamento</div>
@@ -319,7 +320,6 @@
       <div style="display:grid;grid-template-columns:28px repeat(7,1fr);flex-shrink:0" id="semana-dorm">
         <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
       </div>
-    </div>
   </div>
 
   <!-- VISTA LISTA -->
@@ -333,7 +333,7 @@
     </div>
     <div id="lista-marcacoes"></div>
   </div>
-  </div><!-- fim vista-lista -->
+  </div>
 
   <!-- VISTA RELATÓRIOS -->
   <div id="vista-relatorios" style="display:none;flex:1;overflow-y:auto">
@@ -734,10 +734,12 @@
     document.getElementById('semana-titulo').textContent = titulo;
 
     const hojeISO = toISO(new Date());
-    const grid = document.getElementById('semana-grid');
-    grid.innerHTML = '';
+    const semanaInner = document.getElementById('semana-inner');
+    // limpar cols antigas (manter time-col e semana-grid placeholder)
+    const timeColEl = document.getElementById('semana-time-col');
+    semanaInner.innerHTML = '';
+    semanaInner.appendChild(timeColEl);
     const hdrsGrid = document.getElementById('semana-headers');
-    // manter só o corner
     while (hdrsGrid.children.length > 1) hdrsGrid.removeChild(hdrsGrid.lastChild);
     const dormGrid = document.getElementById('semana-dorm');
     while (dormGrid.children.length > 1) dormGrid.removeChild(dormGrid.lastChild);
@@ -938,7 +940,7 @@
         dormGrid.appendChild(zonaD);
       }
 
-      grid.appendChild(col); // timeline col
+      semanaInner.appendChild(col);
     }
   }
 
