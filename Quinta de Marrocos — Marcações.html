@@ -22,7 +22,10 @@
     --radius: 6px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--texto); min-height: 100vh; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--texto); min-height: 100vh; overflow: hidden; }
+  .sidebar-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--texto-muted); cursor: pointer; transition: all .15s; }
+  .sidebar-item.active { background: var(--verde-pale); color: var(--verde); font-weight: 500; border-right: 2px solid var(--verde); }
+  .sidebar-item:hover:not(.active) { background: #f0ede5; color: var(--texto); }
 
   /* LOGIN */
   #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--verde); padding: 24px; }
@@ -257,42 +260,58 @@
 </div>
 
 <!-- APP -->
-<div id="app">
-  <header>
-    <div>
-      <div class="header-title">Quinta de Marrocos</div>
-      <div class="header-sub">Marcações</div>
+<div id="app" style="display:flex;height:100vh;overflow:hidden">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar" style="width:160px;background:var(--creme);border-right:1px solid var(--borda);display:flex;flex-direction:column;flex-shrink:0">
+    <div style="padding:16px 14px 12px;border-bottom:1px solid var(--borda)">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--verde);line-height:1.2">Quinta de Marrocos</div>
+      <div style="font-size:10px;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px">Marcações</div>
     </div>
-    <button class="btn-nova" onclick="abrirModal()">+ Nova marcação</button>
-  </header>
-
-  <div class="tabs">
-    <div class="tab active" id="tab-semana" onclick="mudarVista('semana')">Semana</div>
-    <div class="tab" id="tab-lista" onclick="mudarVista('lista')">Lista</div>
-    <div class="tab" id="tab-relatorios" onclick="mudarVista('relatorios')">Relatórios</div>
-  </div>
-
-  <!-- VISTA SEMANAL -->
-  <div id="vista-semana" class="container">
-    <div class="semana-nav">
-      <div class="semana-titulo" id="semana-titulo"></div>
-      <div class="semana-btns">
-        <button class="btn-nav" onclick="navegarSemana(-1)">&#8592; Anterior</button>
-        <button class="btn-hoje" onclick="irParaHoje()">Hoje</button>
-        <button class="btn-nav" onclick="navegarSemana(1)">Próxima &#8594;</button>
+    <div style="padding:10px 0;flex:1">
+      <div class="sidebar-item active" id="tab-semana" onclick="mudarVista('semana')">
+        <span style="font-size:14px">📅</span> Semana
+      </div>
+      <div class="sidebar-item" id="tab-lista" onclick="mudarVista('lista')">
+        <span style="font-size:14px">📋</span> Lista
+      </div>
+      <div class="sidebar-item" id="tab-relatorios" onclick="mudarVista('relatorios')">
+        <span style="font-size:14px">📊</span> Relatórios
       </div>
     </div>
-    <div class="legenda">
-      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border:1px solid #2d5a3d30"></div>Dormida</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border:1px solid #185fa530"></div>Visita / Prova</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f9f3e6;border:1px solid #b8933a30"></div>Almoço / Jantar</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border:1px solid #88878030"></div>Outros</div>
+    <div style="padding:12px">
+      <button class="btn-nova" onclick="abrirModal()" style="width:100%">+ Nova marcação</button>
     </div>
-    <div class="semana-grid" id="semana-grid"></div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+
+  <!-- VISTA SEMANAL -->
+  <div id="vista-semana" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:8px 14px;border-bottom:1px solid var(--borda);display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div class="semana-btns" style="display:flex;gap:5px">
+        <button class="btn-nav" onclick="navegarSemana(-1)">← Anterior</button>
+        <button class="btn-hoje" onclick="irParaHoje()">Hoje</button>
+        <button class="btn-nav" onclick="navegarSemana(1)">Próxima →</button>
+      </div>
+      <div class="semana-titulo" id="semana-titulo" style="font-size:14px;font-weight:500;color:var(--verde)"></div>
+      <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+        <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border-left:2px solid #2d5a3d;width:10px;height:10px;border-radius:2px"></div>Peq. almoço</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border-left:2px solid #185fa5;width:10px;height:10px;border-radius:2px"></div>Visita / Prova</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#faeeda;border-left:2px solid #854f0b;width:10px;height:10px;border-radius:2px"></div>Almoço</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#fbeaf0;border-left:2px solid #993556;width:10px;height:10px;border-radius:2px"></div>Jantar</div>
+      </div>
+    </div>
+    <div style="flex:1;overflow:hidden;display:grid;grid-template-columns:28px repeat(7,1fr)" id="semana-outer">
+      <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative;overflow:hidden"></div>
+      <div id="semana-grid" style="display:contents"></div>
+    </div>
   </div>
 
   <!-- VISTA LISTA -->
-  <div id="vista-lista" class="container" style="display:none">
+  <div id="vista-lista" style="display:none;flex:1;overflow-y:auto">
+  <div class="container">
     <div class="lista-header">
       <div>
         <div class="lista-titulo">Todas as marcações</div>
@@ -303,8 +322,12 @@
   </div>
 </div>
 
+  </div><!-- fim container lista -->
+  </div><!-- fim vista-lista -->
+
   <!-- VISTA RELATÓRIOS -->
-  <div id="vista-relatorios" class="container" style="display:none">
+  <div id="vista-relatorios" style="display:none;flex:1;overflow-y:auto">
+  <div class="container">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap">
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--verde);flex:1">Relatórios</div>
       <select id="rel-mes" onchange="mudarFiltroRelatorio()" style="padding:8px 12px;border:1px solid var(--borda);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--texto)">
@@ -358,6 +381,8 @@
       </table>
     </div>
   </div>
+  </div><!-- fim conteúdo principal -->
+</div><!-- fim app -->
 
 <!-- MODAL FORMULÁRIO -->
 <div class="modal-overlay hidden" id="modal-overlay">
@@ -618,12 +643,13 @@
 
   function mudarVista(v) {
     vistaAtual = v;
-    document.getElementById('vista-semana').style.display = v === 'semana' ? 'block' : 'none';
+    document.getElementById('vista-semana').style.display = v === 'semana' ? 'flex' : 'none';
     document.getElementById('vista-lista').style.display = v === 'lista' ? 'block' : 'none';
     document.getElementById('vista-relatorios').style.display = v === 'relatorios' ? 'block' : 'none';
-    document.getElementById('tab-semana').className = 'tab' + (v === 'semana' ? ' active' : '');
-    document.getElementById('tab-lista').className = 'tab' + (v === 'lista' ? ' active' : '');
-    document.getElementById('tab-relatorios').className = 'tab' + (v === 'relatorios' ? ' active' : '');
+    ['semana','lista','relatorios'].forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) el.className = 'sidebar-item' + (v === t ? ' active' : '');
+    });
     if (v === 'relatorios') renderRelatorio();
     else renderVista();
   }
@@ -700,6 +726,18 @@
     const grid = document.getElementById('semana-grid');
     grid.innerHTML = '';
 
+    // Coluna de horas (lado esquerdo)
+    const timeCol = document.getElementById('semana-time-col');
+    timeCol.innerHTML = '';
+    timeCol.style.height = TL_H + 'px';
+    for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
+      const t = tlTop(h);
+      const lbl = document.createElement('div');
+      lbl.style.cssText = `position:absolute;right:3px;font-size:8px;color:var(--texto-muted);transform:translateY(-50%);top:${t}px;line-height:1;pointer-events:none`;
+      lbl.textContent = h + 'h';
+      timeCol.appendChild(lbl);
+    }
+
     for (let i = 0; i < 7; i++) {
       const d = new Date(seg); d.setDate(seg.getDate() + i);
       const iso = toISO(d);
@@ -747,24 +785,23 @@
       });
 
       const col = document.createElement('div');
-      col.className = 'dia-col' + (isHoje ? ' hoje' : '');
+      col.style.cssText = `display:flex;flex-direction:column;border-right:1px solid var(--borda);overflow:hidden${isHoje ? ';background:rgba(45,90,61,.02)' : ''}`;
 
       const hdr = document.createElement('div');
-      hdr.className = 'dia-header' + (isHoje ? ' hoje' : '');
-      hdr.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
+      hdr.style.cssText = `padding:4px 5px 3px;border-bottom:1px solid var(--borda);text-align:center;flex-shrink:0${isHoje ? ';background:var(--verde)' : ';background:var(--creme)'}`;
+      hdr.innerHTML = `<div style="font-size:9px;font-weight:500;color:${isHoje ? 'rgba(255,255,255,.7)' : 'var(--texto-muted)'};text-transform:uppercase;letter-spacing:.04em">${DIAS_PT[d.getDay()]}</div><div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:${isHoje ? '#fff' : 'var(--texto)'};line-height:1.1">${d.getDate()}</div>`;
       col.appendChild(hdr);
 
       // ── ZONA TIMELINE (topo) ──
       const zonaTL = document.createElement('div');
-      zonaTL.className = 'dia-zona-timeline';
-      zonaTL.style.height = TL_H + 'px';
-      zonaTL.style.flexShrink = '0';
+      zonaTL.style.cssText = `position:relative;height:${TL_H}px;flex-shrink:0;overflow:hidden`;
 
-      // Linhas de hora contínuas
+      // Linhas de hora (sem labels - ficam na coluna lateral)
       for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
         const t = tlTop(h);
-        const line = document.createElement('div'); line.className = 'tl-hour-line'; line.style.top = t + 'px'; zonaTL.appendChild(line);
-        const lbl = document.createElement('div'); lbl.className = 'tl-hour-label'; lbl.style.top = t + 'px'; lbl.textContent = h + 'h'; zonaTL.appendChild(lbl);
+        const line = document.createElement('div');
+        line.style.cssText = `position:absolute;left:0;right:0;border-top:0.5px solid var(--borda);opacity:.3;top:${t}px`;
+        zonaTL.appendChild(line);
       }
 
       // Peq. almoço
@@ -773,7 +810,7 @@
         ev.className = 'tl-ev tl-ev-pax';
         ev.style.top = tlTop(8) + 'px';
         ev.style.height = tlHeight(8, 9) + 'px';
-        ev.style.left = '22px';
+        ev.style.left = '2px';
         ev.innerHTML = `<div class="tl-ev-tipo">Peq. almoço</div><div class="tl-ev-det">${paxPeqAlmoco} pessoa${paxPeqAlmoco > 1 ? 's' : ''}</div>`;
         ev.onclick = () => abrirDetalhesDia(iso, d);
         zonaTL.appendChild(ev);
@@ -793,12 +830,28 @@
           el.className = 'tl-ev ' + tlClass(ev.tipo_evento);
           el.style.top = tlTop(h1) + 'px';
           el.style.height = tlHeight(h1, h2 || h1 + 1) + 'px';
-          el.style.left = '22px';
+          el.style.left = '2px';
           const det = [ev.local, ev.clientes ? ev.clientes + 'p' : '', ev.agencia].filter(Boolean).join(' · ');
           const pagar = ev.pagar_na_quinta && ev.valor_a_pagar ? `<span class="tl-ev-pagar">${ev.valor_a_pagar}€</span>` : '';
           el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento || '—'}</div><div class="tl-ev-det">${det}</div>${pagar}`;
           el.onclick = () => abrirDetalhesDia(iso, d);
           zonaTL.appendChild(el);
+        });
+
+        // Detetar sobreposições e ajustar posição lado a lado
+        const tlEvs = Array.from(zonaTL.querySelectorAll('.tl-ev'));
+        tlEvs.forEach((el, i) => {
+          const t1 = parseInt(el.style.top);
+          const h1 = parseInt(el.style.height);
+          const overlaps = tlEvs.slice(0, i).filter(prev => {
+            const t2 = parseInt(prev.style.top);
+            const h2 = parseInt(prev.style.height);
+            return t1 < t2 + h2 && t1 + h1 > t2 && prev.style.left === '2px' && prev.style.right === '2px';
+          });
+          if (overlaps.length > 0) {
+            overlaps[overlaps.length - 1].style.right = '50%';
+            el.style.left = '50%';
+          }
         });
 
       // Eventos sem hora (pequenas pills abaixo da timeline)
@@ -827,7 +880,7 @@
       if (temDormidas) {
         const zonaD = document.createElement('div');
         zonaD.className = 'dia-zona dia-zona-dormidas';
-        zonaD.style.cssText = 'background:#f5f9f6;border-top:2px solid var(--borda);padding:4px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;max-height:120px;flex-shrink:0';
+        zonaD.style.cssText = 'background:#f5f9f6;border-top:2px solid var(--borda);padding:3px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;max-height:110px;flex-shrink:0';
 
         Object.entries(dormidas.estadia).forEach(([local, lista]) => {
           const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
