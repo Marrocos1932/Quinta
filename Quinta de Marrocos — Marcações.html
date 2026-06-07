@@ -61,7 +61,7 @@
 
   /* GRELHA SEMANAL */
   .semana-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: start; }
-  .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+  .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; display: flex; flex-direction: column; }
   .dia-col.hoje { border-color: var(--verde); }
   .dia-header { padding: 10px 10px 8px; border-bottom: 1px solid var(--borda); text-align: center; }
   .dia-header.hoje { background: var(--verde); }
@@ -70,7 +70,7 @@
   .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 2px; }
   .dia-header.hoje .dia-num { color: #fff; }
   .dia-zona { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
-  .dia-zona-dormidas { background: #f5f9f6; border-top: 2px solid var(--borda); max-height: 110px; overflow-y: auto; flex-shrink: 0; }
+  .dia-zona-dormidas { background: #f5f9f6; border-top: 2px solid var(--borda); padding: 4px; display: flex; flex-direction: column; gap: 2px; max-height: 110px; overflow-y: auto; flex-shrink: 0; }
   .dia-zona-timeline { position: relative; overflow: hidden; }
   .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--borda); opacity: .3; }
   .tl-hour-lbl { position: absolute; left: 2px; font-size: 8px; color: var(--texto-muted); transform: translateY(-50%); line-height: 1; pointer-events: none; }
@@ -784,7 +784,7 @@
       const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
       if (temDormidas) {
         const zonaD = document.createElement('div');
-        zonaD.className = 'dia-zona dia-zona-dormidas';
+        zonaD.className = 'dia-zona-dormidas';
 
         Object.entries(dormidas.estadia).forEach(([local, lista]) => {
           const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
