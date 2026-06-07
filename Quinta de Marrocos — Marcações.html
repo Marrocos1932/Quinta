@@ -22,11 +22,8 @@
     --radius: 6px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--texto); }
-  .sidebar-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px; font-size: 13px; color: var(--texto-muted); cursor: pointer; transition: all .15s; }
-  .sidebar-item.active { background: var(--verde-pale); color: var(--verde); font-weight: 500; border-right: 2px solid var(--verde); }
-  .sidebar-item:hover:not(.active) { background: #f0ede5; color: var(--texto); }
+  body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--texto); min-height: 100vh; }
+
 
   /* LOGIN */
   #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--verde); padding: 24px; }
@@ -250,7 +247,7 @@
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen" style="position:fixed;inset:0;z-index:10">
+<div id="login-screen">
   <div class="login-box">
     <div class="login-logo">Quinta de Marrocos</div>
     <div class="login-sub">Gestão de Marcações</div>
@@ -261,70 +258,55 @@
 </div>
 
 <!-- APP -->
-<div id="app" style="display:flex;flex-direction:row;position:fixed;inset:0;overflow:hidden">
+<div id="app">
+  <header>
+    <div>
+      <div class="header-title">Quinta de Marrocos</div>
+      <div class="header-sub">Marcações</div>
+    </div>
+    <button class="btn-nova" onclick="abrirModal()">+ Nova marcação</button>
+  </header>
 
-  <!-- SIDEBAR -->
-  <div id="sidebar" style="width:130px;background:var(--creme);border-right:1px solid var(--borda);display:flex;flex-direction:column;flex-shrink:0">
-    <div style="padding:12px 10px 10px;border-bottom:1px solid var(--borda)">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--verde);line-height:1.2">Quinta de Marrocos</div>
-      <div style="font-size:9px;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px">Marcações</div>
-    </div>
-    <div style="padding:8px 0">
-      <div class="sidebar-item active" id="tab-semana" onclick="mudarVista('semana')">Semana</div>
-      <div class="sidebar-item" id="tab-lista" onclick="mudarVista('lista')">Lista</div>
-      <div class="sidebar-item" id="tab-relatorios" onclick="mudarVista('relatorios')">Relatórios</div>
-    </div>
-    <div style="border-top:1px solid var(--borda);padding:10px 10px 6px">
-      <div style="font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Semana</div>
-      <div style="display:flex;gap:4px;margin-bottom:6px">
-        <button class="btn-nav" onclick="navegarSemana(-1)" style="flex:1;padding:4px;font-size:11px">←</button>
-        <button class="btn-hoje" onclick="irParaHoje()" style="flex:1;padding:4px;font-size:11px">Hoje</button>
-        <button class="btn-nav" onclick="navegarSemana(1)" style="flex:1;padding:4px;font-size:11px">→</button>
-      </div>
-      <div id="semana-titulo" style="font-size:11px;font-weight:500;color:var(--verde);text-align:center"></div>
-    </div>
-    <div style="border-top:1px solid var(--borda);padding:8px 10px;flex:1">
-      <div style="font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Legenda</div>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <div class="leg-item"><div style="width:10px;height:10px;border-radius:2px;background:#e8f0ea;border-left:2px solid #2d5a3d;flex-shrink:0"></div>Peq. almoço</div>
-        <div class="leg-item"><div style="width:10px;height:10px;border-radius:2px;background:#e6f1fb;border-left:2px solid #185fa5;flex-shrink:0"></div>Visita / Prova</div>
-        <div class="leg-item"><div style="width:10px;height:10px;border-radius:2px;background:#faeeda;border-left:2px solid #854f0b;flex-shrink:0"></div>Almoço</div>
-        <div class="leg-item"><div style="width:10px;height:10px;border-radius:2px;background:#fbeaf0;border-left:2px solid #993556;flex-shrink:0"></div>Jantar</div>
-        <div class="leg-item"><div style="width:10px;height:10px;border-radius:2px;background:#f1efe8;border-left:2px solid #5f5e5a;flex-shrink:0"></div>Outros</div>
-      </div>
-    </div>
-    <div style="padding:10px;margin-top:auto">
-      <button class="btn-nova" onclick="abrirModal()" style="width:100%;font-size:12px;padding:8px 6px">+ Nova marcação</button>
-    </div>
+  <div class="tabs">
+    <div class="tab active" id="tab-semana" onclick="mudarVista('semana')">Semana</div>
+    <div class="tab" id="tab-lista" onclick="mudarVista('lista')">Lista</div>
+    <div class="tab" id="tab-relatorios" onclick="mudarVista('relatorios')">Relatórios</div>
   </div>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
-
   <!-- VISTA SEMANAL -->
-  <div id="vista-semana" style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0">
-      <!-- Headers dos dias -->
-      <div style="display:grid;grid-template-columns:28px repeat(7,1fr);flex-shrink:0;border-bottom:1px solid var(--borda)" id="semana-headers">
-        <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
+  <div id="vista-semana" class="container">
+    <div class="semana-nav">
+      <div class="semana-titulo" id="semana-titulo"></div>
+      <div class="semana-btns">
+        <button class="btn-nav" onclick="navegarSemana(-1)">&#8592; Anterior</button>
+        <button class="btn-hoje" onclick="irParaHoje()">Hoje</button>
+        <button class="btn-nav" onclick="navegarSemana(1)">Próxima &#8594;</button>
       </div>
-      <!-- Timeline com scroll -->
-      <div style="flex:1;overflow-y:auto;min-height:0" id="semana-outer">
-        <div style="display:grid;grid-template-columns:28px repeat(7,1fr)" id="semana-inner">
-          <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative"></div>
-          <div id="semana-grid"></div>
-        </div>
-      </div>
+    </div>
+    <div class="legenda">
+      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border-left:2px solid #2d5a3d;width:10px;height:10px;border-radius:2px"></div>Peq. almoço</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border-left:2px solid #185fa5;width:10px;height:10px;border-radius:2px"></div>Visita / Prova</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#faeeda;border-left:2px solid #854f0b;width:10px;height:10px;border-radius:2px"></div>Almoço / Jantar</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border-left:2px solid #5f5e5a;width:10px;height:10px;border-radius:2px"></div>Outros</div>
+    </div>
+    <!-- Grid com coluna de horas + 7 dias -->
+    <div style="display:grid;grid-template-columns:28px repeat(7,1fr);border:1px solid var(--borda);border-radius:8px;overflow:hidden">
+      <!-- Headers -->
+      <div style="background:var(--creme);border-bottom:1px solid var(--borda);border-right:1px solid var(--borda)"></div>
+      <div id="semana-headers" style="display:contents"></div>
+      <!-- Time + Grid -->
+      <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative"></div>
+      <div id="semana-grid" style="display:contents"></div>
       <!-- Separador alojamento -->
-      <div style="border-top:2px solid var(--borda);background:var(--creme);font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;padding:3px 8px;flex-shrink:0">Alojamento</div>
-      <!-- Grid alojamento -->
-      <div style="display:grid;grid-template-columns:28px repeat(7,1fr);flex-shrink:0" id="semana-dorm">
-        <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
-      </div>
+      <div style="grid-column:1/-1;border-top:2px solid var(--borda);background:var(--creme);font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;padding:3px 8px">Alojamento</div>
+      <!-- Alojamento corner -->
+      <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
+      <div id="semana-dorm" style="display:contents"></div>
+    </div>
   </div>
 
   <!-- VISTA LISTA -->
-  <div id="vista-lista" style="display:none;flex:1;overflow-y:auto">
-  <div class="container">
+  <div id="vista-lista" class="container" style="display:none">
     <div class="lista-header">
       <div>
         <div class="lista-titulo">Todas as marcações</div>
@@ -333,11 +315,10 @@
     </div>
     <div id="lista-marcacoes"></div>
   </div>
-  </div>
 
   <!-- VISTA RELATÓRIOS -->
-  <div id="vista-relatorios" style="display:none;flex:1;overflow-y:auto">
-  <div class="container">
+  <div id="vista-relatorios" class="container" style="display:none">
+  <div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap">
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--verde);flex:1">Relatórios</div>
       <select id="rel-mes" onchange="mudarFiltroRelatorio()" style="padding:8px 12px;border:1px solid var(--borda);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--texto)">
@@ -390,10 +371,8 @@
         <tbody id="rel-paises-body"></tbody>
       </table>
     </div>
-  </div><!-- fim container relatorios -->
-  </div><!-- fim vista-relatorios -->
-  </div><!-- fim conteúdo principal -->
-</div><!-- fim app -->
+  </div>
+  </div>
 
 <!-- MODAL FORMULÁRIO -->
 <div class="modal-overlay hidden" id="modal-overlay">
@@ -654,13 +633,12 @@
 
   function mudarVista(v) {
     vistaAtual = v;
-    document.getElementById('vista-semana').style.display = v === 'semana' ? 'flex' : 'none';
+    document.getElementById('vista-semana').style.display = v === 'semana' ? 'block' : 'none';
     document.getElementById('vista-lista').style.display = v === 'lista' ? 'block' : 'none';
     document.getElementById('vista-relatorios').style.display = v === 'relatorios' ? 'block' : 'none';
-    ['semana','lista','relatorios'].forEach(t => {
-      const el = document.getElementById('tab-' + t);
-      if (el) el.className = 'sidebar-item' + (v === t ? ' active' : '');
-    });
+    document.getElementById('tab-semana').className = 'tab' + (v === 'semana' ? ' active' : '');
+    document.getElementById('tab-lista').className = 'tab' + (v === 'lista' ? ' active' : '');
+    document.getElementById('tab-relatorios').className = 'tab' + (v === 'relatorios' ? ' active' : '');
     if (v === 'relatorios') renderRelatorio();
     else renderVista();
   }
@@ -734,15 +712,24 @@
     document.getElementById('semana-titulo').textContent = titulo;
 
     const hojeISO = toISO(new Date());
-    const semanaInner = document.getElementById('semana-inner');
-    // limpar cols antigas (manter time-col e semana-grid placeholder)
-    const timeColEl = document.getElementById('semana-time-col');
-    semanaInner.innerHTML = '';
-    semanaInner.appendChild(timeColEl);
+    const grid = document.getElementById('semana-grid');
+    grid.innerHTML = '';
     const hdrsGrid = document.getElementById('semana-headers');
-    while (hdrsGrid.children.length > 1) hdrsGrid.removeChild(hdrsGrid.lastChild);
+    hdrsGrid.innerHTML = '';
     const dormGrid = document.getElementById('semana-dorm');
-    while (dormGrid.children.length > 1) dormGrid.removeChild(dormGrid.lastChild);
+    dormGrid.innerHTML = '';
+
+    // Coluna de horas
+    const timeCol = document.getElementById('semana-time-col');
+    timeCol.innerHTML = '';
+    timeCol.style.height = TL_H + 'px';
+    for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
+      const t = tlTop(h);
+      const lbl = document.createElement('div');
+      lbl.style.cssText = 'position:absolute;right:3px;font-size:8px;color:var(--texto-muted);transform:translateY(-50%);top:'+t+'px;line-height:1;pointer-events:none';
+      lbl.textContent = h + 'h';
+      timeCol.appendChild(lbl);
+    }
 
     // Coluna de horas (lado esquerdo)
     const timeCol = document.getElementById('semana-time-col');
@@ -872,26 +859,7 @@
           }
         });
 
-      // Eventos sem hora (pequenas pills abaixo da timeline)
-      const semHora = outrosEventos.filter(ev => !ev.horario);
-
-      // zonaTL === col, não precisa de append
-
-      // Pills para eventos sem hora (tipo visitas sem horário definido)
-      if (semHora.length > 0) {
-        const semHoraDiv = document.createElement('div');
-        semHoraDiv.style.cssText = 'padding:3px 4px;border-top:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;gap:2px';
-        semHora.forEach(ev => {
-          const pill = document.createElement('div');
-          pill.className = 'evento-pill ' + classEvento(ev.tipo_evento);
-          pill.style.fontSize = '9px';
-          const det = [ev.local, ev.clientes ? ev.clientes + 'p' : ''].filter(Boolean).join(' · ');
-          pill.innerHTML = `<div class="evento-tipo" style="font-size:9px">${ev.tipo_evento || '—'}</div>${det ? '<div class="evento-det" style="font-size:8px">' + det + '</div>' : ''}`;
-          pill.onclick = () => abrirDetalhesDia(iso, d);
-          semHoraDiv.appendChild(pill);
-        });
-        col.appendChild(semHoraDiv);
-      }
+      // Eventos sem hora — não aparecem na semana (visíveis no detalhe do dia)
 
       // ── ZONA ALOJAMENTO (baixo) ──
       const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
@@ -940,7 +908,7 @@
         dormGrid.appendChild(zonaD);
       }
 
-      semanaInner.appendChild(col);
+      grid.appendChild(col);
     }
   }
 
