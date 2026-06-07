@@ -60,8 +60,8 @@
   .btn-hoje { padding: 7px 14px; border: 1px solid var(--verde); border-radius: var(--radius); background: var(--verde); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; }
 
   /* GRELHA SEMANAL */
-  .semana-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-  .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; min-height: 140px; display: flex; flex-direction: column; }
+  .semana-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: start; }
+  .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
   .dia-col.hoje { border-color: var(--verde); }
   .dia-header { padding: 10px 10px 8px; border-bottom: 1px solid var(--borda); text-align: center; }
   .dia-header.hoje { background: var(--verde); }
@@ -71,7 +71,7 @@
   .dia-header.hoje .dia-num { color: #fff; }
   .dia-zona { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
   .dia-zona-dormidas { background: #f5f9f6; border-top: 2px solid var(--borda); max-height: 110px; overflow-y: auto; flex-shrink: 0; }
-  .dia-zona-timeline { flex: 1; position: relative; overflow: hidden; }
+  .dia-zona-timeline { position: relative; overflow: hidden; }
   .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--borda); opacity: .3; }
   .tl-hour-lbl { position: absolute; left: 2px; font-size: 8px; color: var(--texto-muted); transform: translateY(-50%); line-height: 1; pointer-events: none; }
   .tl-ev { position: absolute; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; border-left: 2px solid transparent; }
@@ -266,7 +266,7 @@
       <div class="leg-item"><div class="leg-dot" style="background:#f9f3e6;border:1px solid #b8933a30"></div>Almoço / Jantar</div>
       <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border:1px solid #88878030"></div>Outros</div>
     </div>
-    <div class="semana-grid" id="semana-grid"></div>
+    <div class="semana-grid" id="semana-grid" style="align-items:stretch"></div>
   </div>
 
   <!-- VISTA LISTA -->
