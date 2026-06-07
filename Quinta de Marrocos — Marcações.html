@@ -70,8 +70,21 @@
   .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 2px; }
   .dia-header.hoje .dia-num { color: #fff; }
   .dia-zona { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
-  .dia-zona-dormidas { background: #f5f9f6; border-bottom: 2px solid var(--borda); height: 120px; overflow-y: auto; flex-shrink: 0; }
-  .dia-zona-eventos { flex: 1; background: #fff; overflow-y: auto; }
+  .dia-zona-dormidas { background: #f5f9f6; border-top: 2px solid var(--borda); max-height: 110px; overflow-y: auto; flex-shrink: 0; }
+  .dia-zona-timeline { flex: 1; position: relative; overflow: hidden; }
+  .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--borda); opacity: .3; }
+  .tl-hour-lbl { position: absolute; left: 2px; font-size: 8px; color: var(--texto-muted); transform: translateY(-50%); line-height: 1; pointer-events: none; }
+  .tl-ev { position: absolute; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; border-left: 2px solid transparent; }
+  .tl-ev:hover { opacity: .85; }
+  .tl-ev-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
+  .tl-ev-det { font-size: 8px; line-height: 1.2; margin-top: 1px; }
+  .tl-ev-pagar { font-size: 8px; font-weight: 500; color: #854f0b; background: #faeeda; padding: 0 3px; border-radius: 2px; display: inline-block; }
+  .tl-ev-visita { background: #e6f1fb; border-left-color: #185fa5; } .tl-ev-visita .tl-ev-tipo { color: #0c447c; } .tl-ev-visita .tl-ev-det { color: #185fa5; }
+  .tl-ev-almoco { background: #faeeda; border-left-color: #854f0b; } .tl-ev-almoco .tl-ev-tipo { color: #633806; } .tl-ev-almoco .tl-ev-det { color: #854f0b; }
+  .tl-ev-jantar { background: #fbeaf0; border-left-color: #993556; } .tl-ev-jantar .tl-ev-tipo { color: #72243e; } .tl-ev-jantar .tl-ev-det { color: #993556; }
+  .tl-ev-tabua { background: #f1efe8; border-left-color: #5f5e5a; } .tl-ev-tabua .tl-ev-tipo { color: #444441; } .tl-ev-tabua .tl-ev-det { color: #5f5e5a; }
+  .tl-ev-outro { background: #f1efe8; border-left-color: #888780; } .tl-ev-outro .tl-ev-tipo { color: #444441; } .tl-ev-outro .tl-ev-det { color: #5f5e5a; }
+  .tl-ev-pax { background: #e8f0ea; border-left-color: #2d5a3d; } .tl-ev-pax .tl-ev-tipo { color: #1a3d28; } .tl-ev-pax .tl-ev-det { color: #3d7a52; }
   .dia-eventos { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
   .evento-pill { border-radius: 4px; padding: 4px 7px; cursor: pointer; transition: opacity .15s; }
   .evento-pill:hover { opacity: .8; }
@@ -676,84 +689,135 @@
       hdr.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
       col.appendChild(hdr);
 
+      const amanha = new Date(iso + 'T12:00:00');
+      amanha.setDate(amanha.getDate() + 1);
+      const amanhaISO = toISO(amanha);
+
+      // Peq. almoço: estadia + checkout
+      let paxPA = 0;
+      Object.values(dormidas.estadia).forEach(lista => lista.filter(m => m._checkout >= amanhaISO).forEach(m => paxPA += (m.clientes||0)));
+      Object.values(dormidas.checkout).forEach(lista => lista.forEach(m => paxPA += (m.clientes||0)));
+
+      // ── TIMELINE ──
+      const TL_START = 7.5, TL_END = 21.5, TL_PPH = 30;
+      const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
+      const tlTop = h => Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
+      const tlH = (h1,h2) => Math.max(16, Math.round((Math.min(TL_END,h2)-Math.max(TL_START,h1))*TL_PPH));
+      const tlCls = tipo => {
+        if (!tipo) return 'tl-ev-outro';
+        const t = tipo.toLowerCase();
+        if (t.includes('almoço')||t.includes('almoco')) return 'tl-ev-almoco';
+        if (t.includes('jantar')) return 'tl-ev-jantar';
+        if (t.includes('tábua')||t.includes('tabua')) return 'tl-ev-tabua';
+        if (t.includes('visita')||t.includes('prova')||t.includes('tour')) return 'tl-ev-visita';
+        return 'tl-ev-outro';
+      };
+      const parseH = s => {
+        if (!s) return null;
+        const m = String(s).match(/(\d{1,2})[:.h\-](\d{2})?/);
+        return m ? parseInt(m[1]) + (m[2] ? parseInt(m[2])/60 : 0) : null;
+      };
+
+      const zonaTL = document.createElement('div');
+      zonaTL.className = 'dia-zona-timeline';
+      zonaTL.style.height = TL_H + 'px';
+
+      // Linhas de hora
+      for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
+        const t = tlTop(h);
+        const ln = document.createElement('div'); ln.className='tl-hour-line'; ln.style.top=t+'px'; zonaTL.appendChild(ln);
+        const lb = document.createElement('div'); lb.className='tl-hour-lbl'; lb.style.top=t+'px'; lb.textContent=h+'h'; zonaTL.appendChild(lb);
+      }
+
+      // Peq. almoço automático
+      if (paxPA > 0) {
+        const ev = document.createElement('div');
+        ev.className = 'tl-ev tl-ev-pax';
+        ev.style.cssText = `top:${tlTop(8)}px;height:${tlH(8,9)}px;left:20px;right:2px`;
+        ev.innerHTML = `<div class="tl-ev-tipo">Peq. almoço</div><div class="tl-ev-det">${paxPA} pessoa${paxPA>1?'s':''}</div>`;
+        ev.onclick = () => abrirDetalhesDia(iso, d);
+        zonaTL.appendChild(ev);
+      }
+
+      // Eventos com hora, sem dormidas, ordenados
+      const comHora = outrosEventos.filter(ev => ev.horario);
+      comHora.sort((a,b) => (parseH(a.horario)||0)-(parseH(b.horario)||0));
+
+      // Detetar sobreposições e calcular colunas
+      const cols_ev = [];
+      comHora.forEach(ev => {
+        const h1 = parseH(ev.horario); if (!h1) return;
+        const parts = String(ev.horario).split(/[-–]/);
+        const h2 = parts[1] ? parseH(parts[1].trim()) : h1+1;
+        const ev_h2 = h2||h1+1;
+        let col_idx = 0;
+        for (let ci=0; ci<cols_ev.length; ci++) {
+          const last = cols_ev[ci][cols_ev[ci].length-1];
+          if (last.h2 <= h1) { col_idx=ci; break; }
+          col_idx = ci+1;
+        }
+        if (!cols_ev[col_idx]) cols_ev[col_idx]=[];
+        cols_ev[col_idx].push({ev, h1, h2:ev_h2});
+      });
+
+      const nCols = cols_ev.length || 1;
+      cols_ev.forEach((colEvs, ci) => {
+        colEvs.forEach(({ev, h1, h2}) => {
+          const el = document.createElement('div');
+          el.className = 'tl-ev ' + tlCls(ev.tipo_evento);
+          const leftPct = 20 + ci*(80/nCols);
+          const widthPct = 80/nCols;
+          el.style.cssText = `top:${tlTop(h1)}px;height:${tlH(h1,h2)}px;left:calc(${leftPct}px);right:${ci<nCols-1?`calc(${80-(ci+1)*(80/nCols)}px)`:'2px'}`;
+          el.style.left = (20 + ci*(Math.floor(78/nCols))) + 'px';
+          el.style.right = (ci < nCols-1) ? ((nCols-ci-1)*Math.floor(78/nCols))+'px' : '2px';
+          const det = [ev.local, ev.clientes ? ev.clientes+'p' : '', ev.agencia].filter(Boolean).join(' · ');
+          const pagar = ev.pagar_na_quinta && ev.valor_a_pagar ? `<span class="tl-ev-pagar">${ev.valor_a_pagar}€</span>` : '';
+          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento||'—'}</div><div class="tl-ev-det">${det}</div>${pagar}`;
+          el.onclick = () => abrirDetalhesDia(iso, d);
+          zonaTL.appendChild(el);
+        });
+      });
+
+      col.appendChild(zonaTL);
+
+      // ── ALOJAMENTO EM BAIXO ──
       const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
-      const temEventos = temDormidas || outrosEventos.length;
+      if (temDormidas) {
+        const zonaD = document.createElement('div');
+        zonaD.className = 'dia-zona dia-zona-dormidas';
 
-      // Zona superior: dormidas
-      const zonaD = document.createElement('div');
-      zonaD.className = 'dia-zona dia-zona-dormidas';
-
-      // Zona inferior: outros eventos
-      const zonaE = document.createElement('div');
-      zonaE.className = 'dia-zona dia-zona-eventos';
-
-      if (!temEventos) {
-        zonaE.innerHTML = '<div class="dia-vazio">—</div>';
-      } else {
-        const horaOrdem = h => {
-          if (!h) return '99:99';
-          const m = String(h).match(/(\d{1,2})[:.\/](\d{2})/);
-          return m ? m[1].padStart(2,'0') + ':' + m[2] : '99:99';
-        };
-
-        const amanha = new Date(iso + 'T12:00:00');
-        amanha.setDate(amanha.getDate() + 1);
-        const amanhaISO = toISO(amanha);
-
-        // 🛏 Em ocupação
         Object.entries(dormidas.estadia).forEach(([local, lista]) => {
           const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
           if (emOcupacao.length === 0) return;
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-estadia';
           const n = emOcupacao.length;
-          const det = n > 1 ? n + ' quartos' : (emOcupacao[0].responsavel || '');
-          pill.innerHTML = `<div class="evento-tipo">🛏 ${local}</div>${det ? '<div class="evento-det">' + det + '</div>' : ''}`;
+          const det = n > 1 ? n+' quartos' : (emOcupacao[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">🛏 ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
           pill.onclick = () => abrirDetalhesDia(iso, d);
           zonaD.appendChild(pill);
         });
-
-        // ↓ Check-ins
         Object.entries(dormidas.checkin).forEach(([local, lista]) => {
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-dormida';
           const n = lista.length;
-          const det = n > 1 ? n + ' quartos' : (lista[0].responsavel || '');
-          pill.innerHTML = `<div class="evento-tipo">↓ ${local}</div>${det ? '<div class="evento-det">' + det + '</div>' : ''}`;
+          const det = n > 1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↓ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
           pill.onclick = () => abrirDetalhesDia(iso, d);
           zonaD.appendChild(pill);
         });
-
-        // ↑ Check-outs
         Object.entries(dormidas.checkout).forEach(([local, lista]) => {
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-checkout';
           const n = lista.length;
-          const det = n > 1 ? n + ' quartos' : (lista[0].responsavel || '');
-          pill.innerHTML = `<div class="evento-tipo">↑ ${local}</div>${det ? '<div class="evento-det">' + det + '</div>' : ''}`;
+          const det = n > 1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↑ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
           pill.onclick = () => abrirDetalhesDia(iso, d);
           zonaD.appendChild(pill);
         });
-
-        // Outros eventos por hora
-        if (outrosEventos.length === 0) {
-          zonaE.innerHTML = '<div class="dia-vazio" style="font-size:10px;padding:4px 6px">—</div>';
-        } else {
-          outrosEventos
-            .sort((a, b) => horaOrdem(a.horario).localeCompare(horaOrdem(b.horario)))
-            .forEach(ev => {
-              const pill = document.createElement('div');
-              pill.className = 'evento-pill ' + classEvento(ev.tipo_evento);
-              const det = [ev.horario, ev.local, ev.clientes ? ev.clientes + ' pax' : ''].filter(Boolean).join(' · ');
-              pill.innerHTML = `<div class="evento-tipo">${ev.tipo_evento || '—'}</div>${det ? '<div class="evento-det">' + det + '</div>' : ''}`;
-              pill.onclick = () => abrirDetalhesDia(iso, d);
-              zonaE.appendChild(pill);
-            });
-        }
+        col.appendChild(zonaD);
       }
 
-      if (zonaD.children.length > 0) col.appendChild(zonaD);
-      col.appendChild(zonaE);
       grid.appendChild(col);
     }
   }
