@@ -2,7 +2,6 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍷</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quinta de Marrocos — Marcações</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -23,7 +22,6 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--texto); min-height: 100vh; }
-
 
   /* LOGIN */
   #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--verde); padding: 24px; }
@@ -65,23 +63,20 @@
   .semana-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
   .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; min-height: 140px; display: flex; flex-direction: column; }
   .dia-col.hoje { border-color: var(--verde); }
-  .dia-header { padding: 5px 6px 4px; border-bottom: 1px solid var(--borda); text-align: center; }
+  .dia-header { padding: 10px 10px 8px; border-bottom: 1px solid var(--borda); text-align: center; }
   .dia-header.hoje { background: var(--verde); }
-  .dia-semana { font-size: 9px; font-weight: 500; color: var(--texto-muted); letter-spacing: .05em; text-transform: uppercase; }
+  .dia-semana { font-size: 10px; font-weight: 500; color: var(--texto-muted); letter-spacing: .05em; text-transform: uppercase; }
   .dia-header.hoje .dia-semana { color: rgba(255,255,255,.7); }
-  .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 1px; }
+  .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 2px; }
   .dia-header.hoje .dia-num { color: #fff; }
   .dia-zona { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
   .dia-zona-dormidas { background: #f5f9f6; border-bottom: 2px solid var(--borda); height: 120px; overflow-y: auto; flex-shrink: 0; }
   .dia-zona-eventos { flex: 1; background: #fff; overflow-y: auto; }
   .dia-eventos { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
-  .evento-pill { border-radius: 3px; padding: 2px 4px; cursor: pointer; transition: opacity .15s; border-left: 2px solid transparent; }
+  .evento-pill { border-radius: 4px; padding: 4px 7px; cursor: pointer; transition: opacity .15s; }
   .evento-pill:hover { opacity: .8; }
-  .evento-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
-  .evento-det { font-size: 8px; margin-top: 1px; line-height: 1.2; opacity: .9; }
-  .evento-dormida { border-left-color: #2d5a3d; }
-  .evento-checkout { border-left-color: #993556; }
-  .evento-estadia { border-left-color: #3b6d11; }
+  .evento-tipo { font-size: 10px; font-weight: 500; line-height: 1.2; }
+  .evento-det { font-size: 9px; margin-top: 1px; line-height: 1.2; opacity: .8; }
   .evento-dormida { background: var(--verde-pale); }
   .evento-dormida .evento-tipo { color: #1a3d28; }
   .evento-dormida .evento-det { color: #2d5a3d; }
@@ -196,38 +191,7 @@
   .ed-linha { font-size: 13px; color: var(--texto-muted); margin-bottom: 3px; }
   .ed-linha span { color: var(--texto); }
 
-  /* Timeline */
-  .dia-col { display: flex; flex-direction: column; }
-  .dia-zona-timeline { position: relative; overflow: hidden; }
-  .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--color-border-tertiary); opacity: .3; }
-  .tl-hour-label { position: absolute; left: 2px; font-size: 8px; color: var(--color-text-tertiary); transform: translateY(-50%); line-height: 1; pointer-events: none; }
-  .tl-skip-line { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--color-border-secondary); opacity: .5; }
-  .tl-skip-label { position: absolute; left: 0; right: 0; font-size: 8px; color: var(--color-text-tertiary); text-align: center; pointer-events: none; }
-  .tl-ev { position: absolute; left: 2px; right: 2px; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; }
-  .tl-ev:hover { opacity: .85; }
-  .tl-ev-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
-  .tl-ev-det { font-size: 8px; line-height: 1.2; margin-top: 1px; }
-  .tl-ev-pagar { font-size: 8px; font-weight: 500; color: #854f0b; background: #faeeda; padding: 0 3px; border-radius: 2px; display: inline-block; }
-  .tl-ev-visita { background: #e6f1fb; border-left: 2px solid #185fa5; }
-  .tl-ev-visita .tl-ev-tipo { color: #0c447c; }
-  .tl-ev-visita .tl-ev-det { color: #185fa5; }
-  .tl-ev-almoco { background: #faeeda; border-left: 2px solid #854f0b; }
-  .tl-ev-almoco .tl-ev-tipo { color: #633806; }
-  .tl-ev-almoco .tl-ev-det { color: #854f0b; }
-  .tl-ev-jantar { background: #fbeaf0; border-left: 2px solid #993556; }
-  .tl-ev-jantar .tl-ev-tipo { color: #72243e; }
-  .tl-ev-jantar .tl-ev-det { color: #993556; }
-  .tl-ev-tabua { background: #f1efe8; border-left: 2px solid #5f5e5a; }
-  .tl-ev-tabua .tl-ev-tipo { color: #444441; }
-  .tl-ev-tabua .tl-ev-det { color: #5f5e5a; }
-  .tl-ev-outro { background: #f1efe8; border-left: 2px solid #888780; }
-  .tl-ev-outro .tl-ev-tipo { color: #444441; }
-  .tl-ev-outro .tl-ev-det { color: #5f5e5a; }
-  .tl-ev-pax { background: #e8f0ea; border-left: 2px solid #2d5a3d; }
-  .tl-ev-pax .tl-ev-tipo { color: #1a3d28; }
-  .tl-ev-pax .tl-ev-det { color: #3d7a52; }
-
-  @media (max-width: 700px) {  @media (max-width: 700px) {
+  @media (max-width: 700px) {
     .semana-grid { grid-template-columns: repeat(7,1fr); gap: 4px; }
     .dia-header { padding: 7px 4px 6px; }
     .dia-num { font-size: 16px; }
@@ -284,25 +248,12 @@
       </div>
     </div>
     <div class="legenda">
-      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border-left:2px solid #2d5a3d;width:10px;height:10px;border-radius:2px"></div>Peq. almoço</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border-left:2px solid #185fa5;width:10px;height:10px;border-radius:2px"></div>Visita / Prova</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#faeeda;border-left:2px solid #854f0b;width:10px;height:10px;border-radius:2px"></div>Almoço / Jantar</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border-left:2px solid #5f5e5a;width:10px;height:10px;border-radius:2px"></div>Outros</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border:1px solid #2d5a3d30"></div>Dormida</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border:1px solid #185fa530"></div>Visita / Prova</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f9f3e6;border:1px solid #b8933a30"></div>Almoço / Jantar</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border:1px solid #88878030"></div>Outros</div>
     </div>
-    <!-- Grid com coluna de horas + 7 dias -->
-    <div style="display:grid;grid-template-columns:28px repeat(7,1fr);border:1px solid var(--borda);border-radius:8px;overflow:hidden">
-      <!-- Headers -->
-      <div style="background:var(--creme);border-bottom:1px solid var(--borda);border-right:1px solid var(--borda)"></div>
-      <div id="semana-headers" style="display:contents"></div>
-      <!-- Time + Grid -->
-      <div id="semana-time-col" style="border-right:1px solid var(--borda);background:var(--creme);position:relative"></div>
-      <div id="semana-grid" style="display:contents"></div>
-      <!-- Separador alojamento -->
-      <div style="grid-column:1/-1;border-top:2px solid var(--borda);background:var(--creme);font-size:9px;color:var(--texto-muted);text-transform:uppercase;letter-spacing:.05em;padding:3px 8px">Alojamento</div>
-      <!-- Alojamento corner -->
-      <div style="background:var(--creme);border-right:1px solid var(--borda)"></div>
-      <div id="semana-dorm" style="display:contents"></div>
-    </div>
+    <div class="semana-grid" id="semana-grid"></div>
   </div>
 
   <!-- VISTA LISTA -->
@@ -315,10 +266,10 @@
     </div>
     <div id="lista-marcacoes"></div>
   </div>
+</div>
 
   <!-- VISTA RELATÓRIOS -->
   <div id="vista-relatorios" class="container" style="display:none">
-  <div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap">
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--verde);flex:1">Relatórios</div>
       <select id="rel-mes" onchange="mudarFiltroRelatorio()" style="padding:8px 12px;border:1px solid var(--borda);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--texto)">
@@ -371,7 +322,6 @@
         <tbody id="rel-paises-body"></tbody>
       </table>
     </div>
-  </div>
   </div>
 
 <!-- MODAL FORMULÁRIO -->
@@ -675,36 +625,6 @@
   function navegarSemana(d) { semanaOffset += d; renderSemana(); }
   function irParaHoje() { semanaOffset = 0; renderSemana(); }
 
-  // ── TIMELINE HELPERS ──
-  const TL_START = 7.5;
-  const TL_END = 21.5;
-  const TL_PPH = 30;
-  const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
-
-  function tlTop(h) {
-    return Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
-  }
-
-  function tlHeight(h1, h2) {
-    return Math.max(16, Math.round((Math.min(TL_END, h2) - Math.max(TL_START, h1)) * TL_PPH));
-  }
-
-  function parseHora(s) {
-    if (!s) return null;
-    const m = String(s).match(/(\d{1,2})[:.h\-](\d{2})?/);
-    return m ? parseInt(m[1]) + (m[2] ? parseInt(m[2]) / 60 : 0) : null;
-  }
-
-  function tlClass(tipo) {
-    if (!tipo) return 'tl-ev-outro';
-    const t = tipo.toLowerCase();
-    if (t.includes('almoço') || t.includes('almoco')) return 'tl-ev-almoco';
-    if (t.includes('jantar')) return 'tl-ev-jantar';
-    if (t.includes('tábua') || t.includes('tabua')) return 'tl-ev-tabua';
-    if (t.includes('visita') || t.includes('prova') || t.includes('tour')) return 'tl-ev-visita';
-    return 'tl-ev-outro';
-  }
-
   function renderSemana() {
     const seg = getLunesDaSemana(semanaOffset);
     const fim = new Date(seg); fim.setDate(seg.getDate() + 6);
@@ -714,41 +634,13 @@
     const hojeISO = toISO(new Date());
     const grid = document.getElementById('semana-grid');
     grid.innerHTML = '';
-    const hdrsGrid = document.getElementById('semana-headers');
-    hdrsGrid.innerHTML = '';
-    const dormGrid = document.getElementById('semana-dorm');
-    dormGrid.innerHTML = '';
-
-    // Coluna de horas
-    const timeCol = document.getElementById('semana-time-col');
-    timeCol.innerHTML = '';
-    timeCol.style.height = TL_H + 'px';
-    for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
-      const t = tlTop(h);
-      const lbl = document.createElement('div');
-      lbl.style.cssText = 'position:absolute;right:3px;font-size:8px;color:var(--texto-muted);transform:translateY(-50%);top:'+t+'px;line-height:1;pointer-events:none';
-      lbl.textContent = h + 'h';
-      timeCol.appendChild(lbl);
-    }
-
-    // Coluna de horas (lado esquerdo)
-    const timeCol = document.getElementById('semana-time-col');
-    timeCol.innerHTML = '';
-    timeCol.style.height = TL_H + 'px';
-    for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
-      const t = tlTop(h);
-      const lbl = document.createElement('div');
-      lbl.style.cssText = `position:absolute;right:3px;font-size:8px;color:var(--texto-muted);transform:translateY(-50%);top:${t}px;line-height:1;pointer-events:none`;
-      lbl.textContent = h + 'h';
-      timeCol.appendChild(lbl);
-    }
 
     for (let i = 0; i < 7; i++) {
       const d = new Date(seg); d.setDate(seg.getDate() + i);
       const iso = toISO(d);
       const isHoje = iso === hojeISO;
 
-      // Classificar dormidas
+      // Agrupar dormidas por local e papel (checkin/estadia/checkout)
       const dormidas = { checkin: {}, checkout: {}, estadia: {} };
       const outrosEventos = [];
 
@@ -776,103 +668,39 @@
         }
       });
 
-      const amanha = new Date(iso + 'T12:00:00');
-      amanha.setDate(amanha.getDate() + 1);
-      const amanhaISO = toISO(amanha);
-
-      // Peq. almoço: estadia + checkout
-      let paxPeqAlmoco = 0;
-      Object.values(dormidas.estadia).forEach(lista => {
-        lista.filter(m => m._checkout >= amanhaISO).forEach(m => paxPeqAlmoco += (m.clientes || 0));
-      });
-      Object.values(dormidas.checkout).forEach(lista => {
-        lista.forEach(m => paxPeqAlmoco += (m.clientes || 0));
-      });
-
-      // Header no grid de headers
-      const hdrCell = document.createElement('div');
-      hdrCell.style.cssText = `padding:4px 5px 3px;border-right:1px solid var(--borda);text-align:center${isHoje ? ';background:var(--verde)' : ';background:var(--creme)'}`;
-      hdrCell.innerHTML = `<div style="font-size:9px;font-weight:500;color:${isHoje ? 'rgba(255,255,255,.7)' : 'var(--texto-muted)'};text-transform:uppercase;letter-spacing:.04em">${DIAS_PT[d.getDay()]}</div><div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:${isHoje ? '#fff' : 'var(--texto)'};line-height:1.1">${d.getDate()}</div>`;
-      hdrsGrid.appendChild(hdrCell);
-
-      // Coluna de timeline
       const col = document.createElement('div');
-      col.style.cssText = `position:relative;border-right:1px solid var(--borda);overflow:hidden;height:${TL_H}px${isHoje ? ';background:rgba(45,90,61,.02)' : ''}`;
+      col.className = 'dia-col' + (isHoje ? ' hoje' : '');
 
-      const zonaTL = col; // col já é a zona timeline
+      const hdr = document.createElement('div');
+      hdr.className = 'dia-header' + (isHoje ? ' hoje' : '');
+      hdr.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
+      col.appendChild(hdr);
 
-      // Linhas de hora (sem labels - ficam na coluna lateral)
-      for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
-        const t = tlTop(h);
-        const line = document.createElement('div');
-        line.style.cssText = `position:absolute;left:0;right:0;border-top:0.5px solid var(--borda);opacity:.3;top:${t}px`;
-        zonaTL.appendChild(line);
-      }
-
-      // Peq. almoço
-      if (paxPeqAlmoco > 0) {
-        const ev = document.createElement('div');
-        ev.className = 'tl-ev tl-ev-pax';
-        ev.style.top = tlTop(8) + 'px';
-        ev.style.height = tlHeight(8, 9) + 'px';
-        ev.style.left = '2px';
-        ev.innerHTML = `<div class="tl-ev-tipo">Peq. almoço</div><div class="tl-ev-det">${paxPeqAlmoco} pessoa${paxPeqAlmoco > 1 ? 's' : ''}</div>`;
-        ev.onclick = () => abrirDetalhesDia(iso, d);
-        zonaTL.appendChild(ev);
-      }
-
-      // Outros eventos na timeline
-      outrosEventos
-        .filter(ev => ev.horario)
-        .sort((a, b) => (parseHora(a.horario) || 0) - (parseHora(b.horario) || 0))
-        .forEach(ev => {
-          const h1 = parseHora(ev.horario);
-          if (!h1) return;
-          // tentar extrair hora de fim do horario "10:30-12:00"
-          const parts = String(ev.horario).split(/[-–]/);
-          const h2 = parts[1] ? parseHora(parts[1].trim()) : h1 + 1;
-          const el = document.createElement('div');
-          el.className = 'tl-ev ' + tlClass(ev.tipo_evento);
-          el.style.top = tlTop(h1) + 'px';
-          el.style.height = tlHeight(h1, h2 || h1 + 1) + 'px';
-          el.style.left = '2px';
-          const det = [ev.local, ev.clientes ? ev.clientes + 'p' : '', ev.agencia].filter(Boolean).join(' · ');
-          const pagar = ev.pagar_na_quinta && ev.valor_a_pagar ? `<span class="tl-ev-pagar">${ev.valor_a_pagar}€</span>` : '';
-          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento || '—'}</div><div class="tl-ev-det">${det}</div>${pagar}`;
-          el.onclick = () => abrirDetalhesDia(iso, d);
-          zonaTL.appendChild(el);
-        });
-
-        // Detetar sobreposições e ajustar posição lado a lado
-        const tlEvs = Array.from(zonaTL.querySelectorAll('.tl-ev'));
-        tlEvs.forEach((el, i) => {
-          const t1 = parseInt(el.style.top);
-          const h1 = parseInt(el.style.height);
-          const overlaps = tlEvs.slice(0, i).filter(prev => {
-            const t2 = parseInt(prev.style.top);
-            const h2 = parseInt(prev.style.height);
-            return t1 < t2 + h2 && t1 + h1 > t2 && prev.style.left === '2px' && prev.style.right === '2px';
-          });
-          if (overlaps.length > 0) {
-            overlaps[overlaps.length - 1].style.right = '50%';
-            el.style.left = '50%';
-          }
-        });
-
-      // Eventos sem hora — não aparecem na semana (visíveis no detalhe do dia)
-
-      // ── ZONA ALOJAMENTO (baixo) ──
       const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
-      if (!temDormidas) {
-        const emptyD = document.createElement('div');
-        emptyD.style.cssText = 'border-right:1px solid var(--borda);min-height:24px';
-        dormGrid.appendChild(emptyD);
-      }
-      if (temDormidas) {
-        const zonaD = document.createElement('div');
-        zonaD.className = 'dia-zona dia-zona-dormidas';
-        zonaD.style.cssText = 'background:#f5f9f6;border-top:2px solid var(--borda);padding:3px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;max-height:110px;flex-shrink:0';
+      const temEventos = temDormidas || outrosEventos.length;
 
+      // Zona superior: dormidas
+      const zonaD = document.createElement('div');
+      zonaD.className = 'dia-zona dia-zona-dormidas';
+
+      // Zona inferior: outros eventos
+      const zonaE = document.createElement('div');
+      zonaE.className = 'dia-zona dia-zona-eventos';
+
+      if (!temEventos) {
+        zonaE.innerHTML = '<div class="dia-vazio">—</div>';
+      } else {
+        const horaOrdem = h => {
+          if (!h) return '99:99';
+          const m = String(h).match(/(\d{1,2})[:.\/](\d{2})/);
+          return m ? m[1].padStart(2,'0') + ':' + m[2] : '99:99';
+        };
+
+        const amanha = new Date(iso + 'T12:00:00');
+        amanha.setDate(amanha.getDate() + 1);
+        const amanhaISO = toISO(amanha);
+
+        // 🛏 Em ocupação
         Object.entries(dormidas.estadia).forEach(([local, lista]) => {
           const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
           if (emOcupacao.length === 0) return;
@@ -885,6 +713,7 @@
           zonaD.appendChild(pill);
         });
 
+        // ↓ Check-ins
         Object.entries(dormidas.checkin).forEach(([local, lista]) => {
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-dormida';
@@ -895,6 +724,7 @@
           zonaD.appendChild(pill);
         });
 
+        // ↑ Check-outs
         Object.entries(dormidas.checkout).forEach(([local, lista]) => {
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-checkout';
@@ -905,9 +735,25 @@
           zonaD.appendChild(pill);
         });
 
-        dormGrid.appendChild(zonaD);
+        // Outros eventos por hora
+        if (outrosEventos.length === 0) {
+          zonaE.innerHTML = '<div class="dia-vazio" style="font-size:10px;padding:4px 6px">—</div>';
+        } else {
+          outrosEventos
+            .sort((a, b) => horaOrdem(a.horario).localeCompare(horaOrdem(b.horario)))
+            .forEach(ev => {
+              const pill = document.createElement('div');
+              pill.className = 'evento-pill ' + classEvento(ev.tipo_evento);
+              const det = [ev.horario, ev.local, ev.clientes ? ev.clientes + ' pax' : ''].filter(Boolean).join(' · ');
+              pill.innerHTML = `<div class="evento-tipo">${ev.tipo_evento || '—'}</div>${det ? '<div class="evento-det">' + det + '</div>' : ''}`;
+              pill.onclick = () => abrirDetalhesDia(iso, d);
+              zonaE.appendChild(pill);
+            });
+        }
       }
 
+      if (zonaD.children.length > 0) col.appendChild(zonaD);
+      col.appendChild(zonaE);
       grid.appendChild(col);
     }
   }
