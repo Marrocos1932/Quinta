@@ -197,7 +197,7 @@
 
   /* Timeline */
   .dia-col { display: flex; flex-direction: column; }
-  .dia-zona-timeline { flex: 1; position: relative; overflow: hidden; }
+  .dia-zona-timeline { position: relative; overflow: hidden; }
   .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--color-border-tertiary); opacity: .3; }
   .tl-hour-label { position: absolute; left: 2px; font-size: 8px; color: var(--color-text-tertiary); transform: translateY(-50%); line-height: 1; pointer-events: none; }
   .tl-skip-line { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--color-border-secondary); opacity: .5; }
@@ -768,6 +768,7 @@
       const zonaTL = document.createElement('div');
       zonaTL.className = 'dia-zona-timeline';
       zonaTL.style.height = TL_H + 'px';
+      zonaTL.style.flexShrink = '0';
 
       // Linhas de hora e skips
       let cy = 0;
