@@ -2,6 +2,7 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍷</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quinta de Marrocos — Marcações</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -191,7 +192,38 @@
   .ed-linha { font-size: 13px; color: var(--texto-muted); margin-bottom: 3px; }
   .ed-linha span { color: var(--texto); }
 
-  @media (max-width: 700px) {
+  /* Timeline */
+  .dia-col { display: flex; flex-direction: column; }
+  .dia-zona-timeline { flex: 1; position: relative; overflow: hidden; min-height: 200px; }
+  .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--color-border-tertiary); opacity: .3; }
+  .tl-hour-label { position: absolute; left: 2px; font-size: 8px; color: var(--color-text-tertiary); transform: translateY(-50%); line-height: 1; pointer-events: none; }
+  .tl-skip-line { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--color-border-secondary); opacity: .5; }
+  .tl-skip-label { position: absolute; left: 0; right: 0; font-size: 8px; color: var(--color-text-tertiary); text-align: center; pointer-events: none; }
+  .tl-ev { position: absolute; left: 2px; right: 2px; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; }
+  .tl-ev:hover { opacity: .85; }
+  .tl-ev-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
+  .tl-ev-det { font-size: 8px; line-height: 1.2; margin-top: 1px; }
+  .tl-ev-pagar { font-size: 8px; font-weight: 500; color: #854f0b; background: #faeeda; padding: 0 3px; border-radius: 2px; display: inline-block; }
+  .tl-ev-visita { background: #e6f1fb; border-left: 2px solid #185fa5; }
+  .tl-ev-visita .tl-ev-tipo { color: #0c447c; }
+  .tl-ev-visita .tl-ev-det { color: #185fa5; }
+  .tl-ev-almoco { background: #faeeda; border-left: 2px solid #854f0b; }
+  .tl-ev-almoco .tl-ev-tipo { color: #633806; }
+  .tl-ev-almoco .tl-ev-det { color: #854f0b; }
+  .tl-ev-jantar { background: #fbeaf0; border-left: 2px solid #993556; }
+  .tl-ev-jantar .tl-ev-tipo { color: #72243e; }
+  .tl-ev-jantar .tl-ev-det { color: #993556; }
+  .tl-ev-tabua { background: #f1efe8; border-left: 2px solid #5f5e5a; }
+  .tl-ev-tabua .tl-ev-tipo { color: #444441; }
+  .tl-ev-tabua .tl-ev-det { color: #5f5e5a; }
+  .tl-ev-outro { background: #f1efe8; border-left: 2px solid #888780; }
+  .tl-ev-outro .tl-ev-tipo { color: #444441; }
+  .tl-ev-outro .tl-ev-det { color: #5f5e5a; }
+  .tl-ev-pax { background: #e8f0ea; border-left: 2px solid #2d5a3d; }
+  .tl-ev-pax .tl-ev-tipo { color: #1a3d28; }
+  .tl-ev-pax .tl-ev-det { color: #3d7a52; }
+
+  @media (max-width: 700px) {  @media (max-width: 700px) {
     .semana-grid { grid-template-columns: repeat(7,1fr); gap: 4px; }
     .dia-header { padding: 7px 4px 6px; }
     .dia-num { font-size: 16px; }
@@ -625,6 +657,46 @@
   function navegarSemana(d) { semanaOffset += d; renderSemana(); }
   function irParaHoje() { semanaOffset = 0; renderSemana(); }
 
+  // ── TIMELINE HELPERS ──
+  const TL_BLOCKS = [
+    { start: 7.5,  end: 9.5,  px: 56 },
+    { skip: true,  px: 14 },
+    { start: 10,   end: 12.5, px: 42 },
+    { skip: true,  px: 14 },
+    { start: 14,   end: 17.5, px: 56 },
+    { skip: true,  px: 14 },
+    { start: 17.5, end: 21.5, px: 64 },
+  ];
+  const TL_H = TL_BLOCKS.reduce((s, b) => s + b.px, 0);
+
+  function tlTop(h) {
+    let y = 0;
+    for (const b of TL_BLOCKS) {
+      if (b.skip) { y += b.px; continue; }
+      if (h <= b.end) return y + Math.round((Math.max(h, b.start) - b.start) / (b.end - b.start) * b.px);
+      y += b.px;
+    }
+    return y;
+  }
+
+  function tlHeight(h1, h2) { return Math.max(16, tlTop(h2) - tlTop(h1)); }
+
+  function parseHora(s) {
+    if (!s) return null;
+    const m = String(s).match(/(\d{1,2})[:.h\-](\d{2})?/);
+    return m ? parseInt(m[1]) + (m[2] ? parseInt(m[2]) / 60 : 0) : null;
+  }
+
+  function tlClass(tipo) {
+    if (!tipo) return 'tl-ev-outro';
+    const t = tipo.toLowerCase();
+    if (t.includes('almoço') || t.includes('almoco')) return 'tl-ev-almoco';
+    if (t.includes('jantar')) return 'tl-ev-jantar';
+    if (t.includes('tábua') || t.includes('tabua')) return 'tl-ev-tabua';
+    if (t.includes('visita') || t.includes('prova') || t.includes('tour')) return 'tl-ev-visita';
+    return 'tl-ev-outro';
+  }
+
   function renderSemana() {
     const seg = getLunesDaSemana(semanaOffset);
     const fim = new Date(seg); fim.setDate(seg.getDate() + 6);
@@ -640,7 +712,7 @@
       const iso = toISO(d);
       const isHoje = iso === hojeISO;
 
-      // Agrupar dormidas por local e papel (checkin/estadia/checkout)
+      // Classificar dormidas
       const dormidas = { checkin: {}, checkout: {}, estadia: {} };
       const outrosEventos = [];
 
@@ -668,6 +740,19 @@
         }
       });
 
+      const amanha = new Date(iso + 'T12:00:00');
+      amanha.setDate(amanha.getDate() + 1);
+      const amanhaISO = toISO(amanha);
+
+      // Peq. almoço: estadia + checkout
+      let paxPeqAlmoco = 0;
+      Object.values(dormidas.estadia).forEach(lista => {
+        lista.filter(m => m._checkout >= amanhaISO).forEach(m => paxPeqAlmoco += (m.clientes || 0));
+      });
+      Object.values(dormidas.checkout).forEach(lista => {
+        lista.forEach(m => paxPeqAlmoco += (m.clientes || 0));
+      });
+
       const col = document.createElement('div');
       col.className = 'dia-col' + (isHoje ? ' hoje' : '');
 
@@ -676,31 +761,89 @@
       hdr.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
       col.appendChild(hdr);
 
+      // ── ZONA TIMELINE (topo) ──
+      const zonaTL = document.createElement('div');
+      zonaTL.className = 'dia-zona-timeline';
+      zonaTL.style.height = TL_H + 'px';
+
+      // Linhas de hora e skips
+      let cy = 0;
+      TL_BLOCKS.forEach(b => {
+        if (b.skip) {
+          const sl = document.createElement('div'); sl.className = 'tl-skip-line'; sl.style.top = cy + 'px'; zonaTL.appendChild(sl);
+          const lb = document.createElement('div'); lb.className = 'tl-skip-label'; lb.style.top = (cy + 2) + 'px'; lb.textContent = '···'; zonaTL.appendChild(lb);
+          cy += b.px; return;
+        }
+        for (let h = Math.ceil(b.start); h <= Math.floor(b.end); h++) {
+          const t = cy + Math.round((h - b.start) / (b.end - b.start) * b.px);
+          const line = document.createElement('div'); line.className = 'tl-hour-line'; line.style.top = t + 'px'; zonaTL.appendChild(line);
+          const lbl = document.createElement('div'); lbl.className = 'tl-hour-label'; lbl.style.top = t + 'px'; lbl.textContent = h + 'h'; zonaTL.appendChild(lbl);
+        }
+        cy += b.px;
+      });
+
+      // Peq. almoço
+      if (paxPeqAlmoco > 0) {
+        const ev = document.createElement('div');
+        ev.className = 'tl-ev tl-ev-pax';
+        ev.style.top = tlTop(8) + 'px';
+        ev.style.height = tlHeight(8, 9) + 'px';
+        ev.style.left = '22px';
+        ev.innerHTML = `<div class="tl-ev-tipo">Peq. almoço</div><div class="tl-ev-det">${paxPeqAlmoco} pessoa${paxPeqAlmoco > 1 ? 's' : ''}</div>`;
+        ev.onclick = () => abrirDetalhesDia(iso, d);
+        zonaTL.appendChild(ev);
+      }
+
+      // Outros eventos na timeline
+      outrosEventos
+        .filter(ev => ev.horario)
+        .sort((a, b) => (parseHora(a.horario) || 0) - (parseHora(b.horario) || 0))
+        .forEach(ev => {
+          const h1 = parseHora(ev.horario);
+          if (!h1) return;
+          // tentar extrair hora de fim do horario "10:30-12:00"
+          const parts = String(ev.horario).split(/[-–]/);
+          const h2 = parts[1] ? parseHora(parts[1].trim()) : h1 + 1;
+          const el = document.createElement('div');
+          el.className = 'tl-ev ' + tlClass(ev.tipo_evento);
+          el.style.top = tlTop(h1) + 'px';
+          el.style.height = tlHeight(h1, h2 || h1 + 1) + 'px';
+          el.style.left = '22px';
+          const det = [ev.local, ev.clientes ? ev.clientes + 'p' : '', ev.agencia].filter(Boolean).join(' · ');
+          const pagar = ev.pagar_na_quinta && ev.valor_a_pagar ? `<span class="tl-ev-pagar">${ev.valor_a_pagar}€</span>` : '';
+          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento || '—'}</div><div class="tl-ev-det">${det}</div>${pagar}`;
+          el.onclick = () => abrirDetalhesDia(iso, d);
+          zonaTL.appendChild(el);
+        });
+
+      // Eventos sem hora (pequenas pills abaixo da timeline)
+      const semHora = outrosEventos.filter(ev => !ev.horario);
+
+      col.appendChild(zonaTL);
+
+      // Pills para eventos sem hora (tipo visitas sem horário definido)
+      if (semHora.length > 0) {
+        const semHoraDiv = document.createElement('div');
+        semHoraDiv.style.cssText = 'padding:3px 4px;border-top:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;gap:2px';
+        semHora.forEach(ev => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill ' + classEvento(ev.tipo_evento);
+          pill.style.fontSize = '9px';
+          const det = [ev.local, ev.clientes ? ev.clientes + 'p' : ''].filter(Boolean).join(' · ');
+          pill.innerHTML = `<div class="evento-tipo" style="font-size:9px">${ev.tipo_evento || '—'}</div>${det ? '<div class="evento-det" style="font-size:8px">' + det + '</div>' : ''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          semHoraDiv.appendChild(pill);
+        });
+        col.appendChild(semHoraDiv);
+      }
+
+      // ── ZONA ALOJAMENTO (baixo) ──
       const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
-      const temEventos = temDormidas || outrosEventos.length;
+      if (temDormidas) {
+        const zonaD = document.createElement('div');
+        zonaD.className = 'dia-zona dia-zona-dormidas';
+        zonaD.style.cssText = 'background:#f5f9f6;border-top:2px solid var(--color-border-tertiary);padding:4px;display:flex;flex-direction:column;gap:2px';
 
-      // Zona superior: dormidas
-      const zonaD = document.createElement('div');
-      zonaD.className = 'dia-zona dia-zona-dormidas';
-
-      // Zona inferior: outros eventos
-      const zonaE = document.createElement('div');
-      zonaE.className = 'dia-zona dia-zona-eventos';
-
-      if (!temEventos) {
-        zonaE.innerHTML = '<div class="dia-vazio">—</div>';
-      } else {
-        const horaOrdem = h => {
-          if (!h) return '99:99';
-          const m = String(h).match(/(\d{1,2})[:.\/](\d{2})/);
-          return m ? m[1].padStart(2,'0') + ':' + m[2] : '99:99';
-        };
-
-        const amanha = new Date(iso + 'T12:00:00');
-        amanha.setDate(amanha.getDate() + 1);
-        const amanhaISO = toISO(amanha);
-
-        // 🛏 Em ocupação
         Object.entries(dormidas.estadia).forEach(([local, lista]) => {
           const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
           if (emOcupacao.length === 0) return;
@@ -713,7 +856,6 @@
           zonaD.appendChild(pill);
         });
 
-        // ↓ Check-ins
         Object.entries(dormidas.checkin).forEach(([local, lista]) => {
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-dormida';
@@ -724,7 +866,6 @@
           zonaD.appendChild(pill);
         });
 
-        // ↑ Check-outs
         Object.entries(dormidas.checkout).forEach(([local, lista]) => {
           const pill = document.createElement('div');
           pill.className = 'evento-pill evento-checkout';
@@ -735,25 +876,9 @@
           zonaD.appendChild(pill);
         });
 
-        // Outros eventos por hora
-        if (outrosEventos.length === 0) {
-          zonaE.innerHTML = '<div class="dia-vazio" style="font-size:10px;padding:4px 6px">—</div>';
-        } else {
-          outrosEventos
-            .sort((a, b) => horaOrdem(a.horario).localeCompare(horaOrdem(b.horario)))
-            .forEach(ev => {
-              const pill = document.createElement('div');
-              pill.className = 'evento-pill ' + classEvento(ev.tipo_evento);
-              const det = [ev.horario, ev.local, ev.clientes ? ev.clientes + ' pax' : ''].filter(Boolean).join(' · ');
-              pill.innerHTML = `<div class="evento-tipo">${ev.tipo_evento || '—'}</div>${det ? '<div class="evento-det">' + det + '</div>' : ''}`;
-              pill.onclick = () => abrirDetalhesDia(iso, d);
-              zonaE.appendChild(pill);
-            });
-        }
+        col.appendChild(zonaD);
       }
 
-      if (zonaD.children.length > 0) col.appendChild(zonaD);
-      col.appendChild(zonaE);
       grid.appendChild(col);
     }
   }
