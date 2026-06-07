@@ -64,20 +64,23 @@
   .semana-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
   .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; overflow: hidden; min-height: 140px; display: flex; flex-direction: column; }
   .dia-col.hoje { border-color: var(--verde); }
-  .dia-header { padding: 10px 10px 8px; border-bottom: 1px solid var(--borda); text-align: center; }
+  .dia-header { padding: 5px 6px 4px; border-bottom: 1px solid var(--borda); text-align: center; }
   .dia-header.hoje { background: var(--verde); }
-  .dia-semana { font-size: 10px; font-weight: 500; color: var(--texto-muted); letter-spacing: .05em; text-transform: uppercase; }
+  .dia-semana { font-size: 9px; font-weight: 500; color: var(--texto-muted); letter-spacing: .05em; text-transform: uppercase; }
   .dia-header.hoje .dia-semana { color: rgba(255,255,255,.7); }
-  .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 2px; }
+  .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 1px; }
   .dia-header.hoje .dia-num { color: #fff; }
   .dia-zona { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
   .dia-zona-dormidas { background: #f5f9f6; border-bottom: 2px solid var(--borda); height: 120px; overflow-y: auto; flex-shrink: 0; }
   .dia-zona-eventos { flex: 1; background: #fff; overflow-y: auto; }
   .dia-eventos { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
-  .evento-pill { border-radius: 4px; padding: 4px 7px; cursor: pointer; transition: opacity .15s; }
+  .evento-pill { border-radius: 3px; padding: 2px 4px; cursor: pointer; transition: opacity .15s; border-left: 2px solid transparent; }
   .evento-pill:hover { opacity: .8; }
-  .evento-tipo { font-size: 10px; font-weight: 500; line-height: 1.2; }
-  .evento-det { font-size: 9px; margin-top: 1px; line-height: 1.2; opacity: .8; }
+  .evento-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
+  .evento-det { font-size: 8px; margin-top: 1px; line-height: 1.2; opacity: .9; }
+  .evento-dormida { border-left-color: #2d5a3d; }
+  .evento-checkout { border-left-color: #993556; }
+  .evento-estadia { border-left-color: #3b6d11; }
   .evento-dormida { background: var(--verde-pale); }
   .evento-dormida .evento-tipo { color: #1a3d28; }
   .evento-dormida .evento-det { color: #2d5a3d; }
@@ -194,7 +197,7 @@
 
   /* Timeline */
   .dia-col { display: flex; flex-direction: column; }
-  .dia-zona-timeline { flex: 1; position: relative; overflow: hidden; min-height: 200px; }
+  .dia-zona-timeline { flex: 1; position: relative; overflow: hidden; }
   .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--color-border-tertiary); opacity: .3; }
   .tl-hour-label { position: absolute; left: 2px; font-size: 8px; color: var(--color-text-tertiary); transform: translateY(-50%); line-height: 1; pointer-events: none; }
   .tl-skip-line { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--color-border-secondary); opacity: .5; }
@@ -659,13 +662,13 @@
 
   // ── TIMELINE HELPERS ──
   const TL_BLOCKS = [
-    { start: 7.5,  end: 9.5,  px: 56 },
-    { skip: true,  px: 14 },
-    { start: 10,   end: 12.5, px: 42 },
-    { skip: true,  px: 14 },
-    { start: 14,   end: 17.5, px: 56 },
-    { skip: true,  px: 14 },
-    { start: 17.5, end: 21.5, px: 64 },
+    { start: 7.5,  end: 9.5,  px: 48 },
+    { skip: true,  px: 10 },
+    { start: 10,   end: 12.5, px: 36 },
+    { skip: true,  px: 10 },
+    { start: 14,   end: 17.5, px: 50 },
+    { skip: true,  px: 10 },
+    { start: 17.5, end: 21.5, px: 72 },
   ];
   const TL_H = TL_BLOCKS.reduce((s, b) => s + b.px, 0);
 
@@ -842,7 +845,7 @@
       if (temDormidas) {
         const zonaD = document.createElement('div');
         zonaD.className = 'dia-zona dia-zona-dormidas';
-        zonaD.style.cssText = 'background:#f5f9f6;border-top:2px solid var(--color-border-tertiary);padding:4px;display:flex;flex-direction:column;gap:2px';
+        zonaD.style.cssText = 'background:#f5f9f6;border-top:2px solid var(--borda);padding:4px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;max-height:120px;flex-shrink:0';
 
         Object.entries(dormidas.estadia).forEach(([local, lista]) => {
           const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
