@@ -47,6 +47,9 @@
   .tab { padding: 12px 20px; font-size: 13px; font-weight: 500; color: var(--texto-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
   .tab.active { color: var(--verde); border-bottom-color: var(--verde); }
   .tab:hover:not(.active) { color: var(--texto); }
+  .sub-tab { padding: 8px 18px; font-size: 13px; font-weight: 500; color: var(--texto-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
+  .sub-tab.active { color: var(--verde); border-bottom-color: var(--verde); }
+  .sub-tab:hover:not(.active) { color: var(--texto); }
 
   /* CONTAINER */
   .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
@@ -645,8 +648,10 @@
     document.getElementById('semana-titulo').textContent = titulo;
 
     const hojeISO = toISO(new Date());
-    const grid = document.getElementById('semana-grid');
-    grid.innerHTML = '';
+    const grid = document.getElementById('semana-grid-eventos');
+    if (grid) grid.innerHTML = '';
+    const gridDorm = document.getElementById('semana-grid-dormidas');
+    if (gridDorm) gridDorm.innerHTML = '';
 
     for (let i = 0; i < 7; i++) {
       const d = new Date(seg); d.setDate(seg.getDate() + i);
@@ -699,24 +704,10 @@
       Object.values(dormidas.checkout).forEach(lista => lista.forEach(m => paxPA += (m.clientes||0)));
 
       // ── TIMELINE ──
-      // Timeline com blocos: 07:30-09:00, salto, 10:00-20:30
-      const TL_BLOCKS = [
-        { start: 7.5,  end: 9.0,  px: 36 },
-        { skip: true,  px: 8 },
-        { start: 10.0, end: 20.5, px: 336 },
-      ];
-      const TL_H = TL_BLOCKS.reduce((s,b) => s+b.px, 0);
-      const tlTop = h => {
-        let y = 0;
-        for (const b of TL_BLOCKS) {
-          if (b.skip) { y += b.px; continue; }
-          if (h <= b.end) return y + Math.round((Math.max(h, b.start) - b.start) / (b.end - b.start) * b.px);
-          y += b.px;
-        }
-        return y;
-      };
-      const tlH = (h1, h2) => Math.max(16, tlTop(Math.min(h2, 20.5)) - tlTop(Math.max(h1, 7.5)));
-      const TL_START = 7.5, TL_END = 20.5;
+      const TL_START = 7.5, TL_END = 21.0, TL_PPH = 30;
+      const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
+      const tlTop = h => Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
+      const tlH = (h1,h2) => Math.max(16, Math.round((Math.min(TL_END,h2)-Math.max(TL_START,h1))*TL_PPH));
       const tlCls = tipo => {
         if (!tipo) return 'tl-ev-outro';
         const t = tipo.toLowerCase();
@@ -736,26 +727,11 @@
       zonaTL.className = 'dia-zona-timeline';
       zonaTL.style.height = TL_H + 'px';
 
-      // Linhas de hora usando blocos
-      let tlY = 0;
-      for (const b of TL_BLOCKS) {
-        if (b.skip) {
-          // linha tracejada de salto
-          const sl = document.createElement('div');
-          sl.style.cssText = `position:absolute;left:0;right:0;border-top:1px dashed var(--borda);opacity:.5;top:${tlY}px`;
-          zonaTL.appendChild(sl);
-          const slb = document.createElement('div');
-          slb.style.cssText = `position:absolute;left:0;right:0;font-size:7px;color:var(--texto-muted);text-align:center;top:${tlY+1}px`;
-          slb.textContent = '···';
-          zonaTL.appendChild(slb);
-          tlY += b.px; continue;
-        }
-        for (let h = Math.ceil(b.start); h <= Math.floor(b.end); h++) {
-          const t = tlY + Math.round((h - b.start) / (b.end - b.start) * b.px);
-          const ln = document.createElement('div'); ln.className='tl-hour-line'; ln.style.top=t+'px'; zonaTL.appendChild(ln);
-          const lb = document.createElement('div'); lb.className='tl-hour-lbl'; lb.style.top=t+'px'; lb.textContent=h+'h'; zonaTL.appendChild(lb);
-        }
-        tlY += b.px;
+      // Linhas de hora contínuas
+      for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
+        const t = tlTop(h);
+        const ln = document.createElement('div'); ln.className='tl-hour-line'; ln.style.top=t+'px'; zonaTL.appendChild(ln);
+        const lb = document.createElement('div'); lb.className='tl-hour-lbl'; lb.style.top=t+'px'; lb.textContent=h+'h'; zonaTL.appendChild(lb);
       }
 
       // Peq. almoço automático
@@ -848,6 +824,56 @@
       }
 
       grid.appendChild(col);
+
+      // Col para a vista de dormidas
+      const colD = document.createElement('div');
+      colD.className = 'dia-col' + (isHoje ? ' hoje' : '');
+      const hdrD = document.createElement('div');
+      hdrD.className = 'dia-header' + (isHoje ? ' hoje' : '');
+      hdrD.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
+      colD.appendChild(hdrD);
+
+      const zonaDevts = document.createElement('div');
+      zonaDevts.className = 'dia-zona dia-zona-eventos';
+
+      const temDormidasD = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
+      if (!temDormidasD) {
+        zonaDevts.innerHTML = '<div class="dia-vazio">—</div>';
+      } else {
+        Object.entries(dormidas.estadia).forEach(([local, lista]) => {
+          const amanhaDx = new Date(iso + 'T12:00:00'); amanhaDx.setDate(amanhaDx.getDate()+1);
+          const aDx = toISO(amanhaDx);
+          const emOc = lista.filter(m => m._checkout >= aDx);
+          if (!emOc.length) return;
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-estadia';
+          const n = emOc.length;
+          const det = n>1 ? n+' quartos' : (emOc[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">🛏 ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaDevts.appendChild(pill);
+        });
+        Object.entries(dormidas.checkin).forEach(([local, lista]) => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-dormida';
+          const n = lista.length;
+          const det = n>1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↓ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaDevts.appendChild(pill);
+        });
+        Object.entries(dormidas.checkout).forEach(([local, lista]) => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-checkout';
+          const n = lista.length;
+          const det = n>1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↑ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaDevts.appendChild(pill);
+        });
+      }
+      colD.appendChild(zonaDevts);
+      gridDorm.appendChild(colD);
     }
   }
 
@@ -1293,6 +1319,14 @@
         <td class="rel-td rel-td-num val">${(totP.cp_hosp+totP.ch_hosp)||'—'}</td>
         <td class="rel-td rel-td-num val">${(totP.cp_noites+totP.ch_noites)||'—'}</td>
       </tr>`;
+  }
+
+  // Sub-tabs semana
+  function mudarSubTab(v) {
+    document.getElementById('svista-eventos').style.display = v === 'eventos' ? 'block' : 'none';
+    document.getElementById('svista-dormidas').style.display = v === 'dormidas' ? 'block' : 'none';
+    document.getElementById('subtab-eventos').className = 'sub-tab' + (v === 'eventos' ? ' active' : '');
+    document.getElementById('subtab-dormidas').className = 'sub-tab' + (v === 'dormidas' ? ' active' : '');
   }
 
   // Inicializar mês atual no selector de relatórios
