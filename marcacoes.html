@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quinta de Marrocos — Marcações</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     --verde: #2d5a3d;
@@ -244,7 +245,10 @@
       <div class="header-title">Quinta de Marrocos</div>
       <div class="header-sub">Marcações</div>
     </div>
-    <button class="btn-nova" onclick="abrirModal()">+ Nova marcação</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-nav" onclick="exportarExcel()" style="font-size:12px;padding:7px 14px">⬇ Excel</button>
+      <button class="btn-nova" onclick="abrirModal()">+ Nova marcação</button>
+    </div>
   </header>
 
   <div class="tabs">
@@ -1343,6 +1347,37 @@
         <td class="rel-td rel-td-num val">${(totP.cp_hosp+totP.ch_hosp)||'—'}</td>
         <td class="rel-td rel-td-num val">${(totP.cp_noites+totP.ch_noites)||'—'}</td>
       </tr>`;
+  }
+
+  function exportarExcel() {
+    const { inicio, fim } = getFiltroSemana();
+    const dados = marcacoes.filter(m => m.data >= inicio && m.data <= fim);
+
+    const rows = dados.map(m => ({
+      'Data': m.data || '',
+      'Horário': m.horario || '',
+      'Responsável': m.responsavel || '',
+      'Agência': m.agencia || '',
+      'Noites': m.noites || '',
+      'Local': m.local || '',
+      'Pagar na Quinta?': m.pagar_na_quinta ? 'Sim' : 'Não',
+      'Valor a Pagar (€)': m.valor_a_pagar || '',
+      'Língua': m.lingua || '',
+      'País': m.pais || '',
+      'Observações': m.observacoes || '',
+      'Tipo de Evento': m.tipo_evento || '',
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Marcações');
+    XLSX.writeFile(wb, 'marcacoes_' + inicio + '_' + fim + '.xlsx');
+  }
+
+  function getFiltroSemana() {
+    const seg = getLunesDaSemana(semanaOffset);
+    const fim = new Date(seg); fim.setDate(seg.getDate() + 6);
+    return { inicio: toISO(seg), fim: toISO(fim) };
   }
 
   // Inicializar mês atual no selector de relatórios
