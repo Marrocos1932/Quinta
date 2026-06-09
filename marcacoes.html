@@ -248,13 +248,14 @@
   </header>
 
   <div class="tabs">
-    <div class="tab active" id="tab-semana" onclick="mudarVista('semana')">Semana</div>
+    <div class="tab active" id="tab-eventos" onclick="mudarVista('eventos')">Eventos</div>
+    <div class="tab" id="tab-dormidas" onclick="mudarVista('dormidas')">Dormidas</div>
     <div class="tab" id="tab-lista" onclick="mudarVista('lista')">Lista</div>
     <div class="tab" id="tab-relatorios" onclick="mudarVista('relatorios')">Relatórios</div>
   </div>
 
-  <!-- VISTA SEMANAL -->
-  <div id="vista-semana" class="container">
+  <!-- VISTA EVENTOS -->
+  <div id="vista-eventos" class="container">
     <div class="semana-nav">
       <div class="semana-titulo" id="semana-titulo"></div>
       <div class="semana-btns">
@@ -264,12 +265,30 @@
       </div>
     </div>
     <div class="legenda">
-      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border:1px solid #2d5a3d30"></div>Dormida</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border:1px solid #185fa530"></div>Visita / Prova</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f9f3e6;border:1px solid #b8933a30"></div>Almoço / Jantar</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border:1px solid #88878030"></div>Outros</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border-left:2px solid #2d5a3d;width:10px;height:10px;border-radius:2px"></div>Peq. almoço</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border-left:2px solid #185fa5;width:10px;height:10px;border-radius:2px"></div>Visita / Prova</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#faeeda;border-left:2px solid #854f0b;width:10px;height:10px;border-radius:2px"></div>Almoço / Jantar</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border-left:2px solid #5f5e5a;width:10px;height:10px;border-radius:2px"></div>Outros</div>
     </div>
-    <div class="semana-grid" id="semana-grid" style="align-items:stretch"></div>
+    <div class="semana-grid" id="semana-grid-eventos"></div>
+  </div>
+
+  <!-- VISTA DORMIDAS -->
+  <div id="vista-dormidas" class="container" style="display:none">
+    <div class="semana-nav">
+      <div class="semana-titulo" id="semana-titulo-dorm"></div>
+      <div class="semana-btns">
+        <button class="btn-nav" onclick="navegarSemana(-1)">&#8592; Anterior</button>
+        <button class="btn-hoje" onclick="irParaHoje()">Hoje</button>
+        <button class="btn-nav" onclick="navegarSemana(1)">Próxima &#8594;</button>
+      </div>
+    </div>
+    <div class="legenda">
+      <div class="leg-item"><div class="leg-dot" style="background:#f1f8ee;border-left:2px solid #3b6d11;width:10px;height:10px;border-radius:2px"></div>Em ocupação</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border-left:2px solid #2d5a3d;width:10px;height:10px;border-radius:2px"></div>Check-in ↓</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fbeaf0;border-left:2px solid #993556;width:10px;height:10px;border-radius:2px"></div>Check-out ↑</div>
+    </div>
+    <div class="semana-grid" id="semana-grid-dormidas"></div>
   </div>
 
   <!-- VISTA LISTA -->
@@ -524,7 +543,7 @@
   let marcacoes = [];
   let editandoId = null;
   let semanaOffset = 0;
-  let vistaAtual = 'semana';
+  let vistaAtual = 'eventos';
   let sbToken = null;
 
   const DIAS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -599,19 +618,21 @@
 
   function mudarVista(v) {
     vistaAtual = v;
-    document.getElementById('vista-semana').style.display = v === 'semana' ? 'block' : 'none';
+    document.getElementById('vista-eventos').style.display = v === 'eventos' ? 'block' : 'none';
+    document.getElementById('vista-dormidas').style.display = v === 'dormidas' ? 'block' : 'none';
     document.getElementById('vista-lista').style.display = v === 'lista' ? 'block' : 'none';
     document.getElementById('vista-relatorios').style.display = v === 'relatorios' ? 'block' : 'none';
-    document.getElementById('tab-semana').className = 'tab' + (v === 'semana' ? ' active' : '');
-    document.getElementById('tab-lista').className = 'tab' + (v === 'lista' ? ' active' : '');
-    document.getElementById('tab-relatorios').className = 'tab' + (v === 'relatorios' ? ' active' : '');
+    ['eventos','dormidas','lista','relatorios'].forEach(t => {
+      const el = document.getElementById('tab-' + t);
+      if (el) el.className = 'tab' + (v === t ? ' active' : '');
+    });
     if (v === 'relatorios') renderRelatorio();
     else renderVista();
   }
 
   function renderVista() {
-    if (vistaAtual === 'semana') renderSemana();
-    else renderLista();
+    if (vistaAtual === 'eventos' || vistaAtual === 'dormidas') renderSemana();
+    else if (vistaAtual === 'lista') renderLista();
   }
 
   /* ── SEMANA ── */
@@ -646,6 +667,8 @@
     const fim = new Date(seg); fim.setDate(seg.getDate() + 6);
     const titulo = seg.getDate() + ' ' + MESES_SHORT[seg.getMonth()] + ' – ' + fim.getDate() + ' ' + MESES_SHORT[fim.getMonth()] + ' ' + fim.getFullYear();
     document.getElementById('semana-titulo').textContent = titulo;
+    const tituloDorm = document.getElementById('semana-titulo-dorm');
+    if (tituloDorm) tituloDorm.textContent = titulo;
 
     const hojeISO = toISO(new Date());
     const grid = document.getElementById('semana-grid-eventos');
@@ -1320,14 +1343,6 @@
         <td class="rel-td rel-td-num val">${(totP.cp_hosp+totP.ch_hosp)||'—'}</td>
         <td class="rel-td rel-td-num val">${(totP.cp_noites+totP.ch_noites)||'—'}</td>
       </tr>`;
-  }
-
-  // Sub-tabs semana
-  function mudarSubTab(v) {
-    document.getElementById('svista-eventos').style.display = v === 'eventos' ? 'block' : 'none';
-    document.getElementById('svista-dormidas').style.display = v === 'dormidas' ? 'block' : 'none';
-    document.getElementById('subtab-eventos').className = 'sub-tab' + (v === 'eventos' ? ' active' : '');
-    document.getElementById('subtab-dormidas').className = 'sub-tab' + (v === 'dormidas' ? ' active' : '');
   }
 
   // Inicializar mês atual no selector de relatórios
