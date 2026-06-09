@@ -649,7 +649,8 @@
 
     const hojeISO = toISO(new Date());
     const grid = document.getElementById('semana-grid-eventos');
-    if (grid) grid.innerHTML = '';
+    if (!grid) { console.error('semana-grid-eventos not found'); return; }
+    grid.innerHTML = '';
     const gridDorm = document.getElementById('semana-grid-dormidas');
     if (gridDorm) gridDorm.innerHTML = '';
 
