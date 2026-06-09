@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quinta de Marrocos — Marcações</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #2d5a3d;
+    --verde-light: #3d7a52;
+    --verde-pale: #e8f0ea;
+    --dourado: #b8933a;
+    --dourado-pale: #f9f3e6;
+    --creme: #faf8f4;
+    --texto: #1a1a18;
+    --texto-muted: #6b6b5e;
+    --borda: #d8d4c8;
+    --borda-focus: #2d5a3d;
+    --erro: #c0392b;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--creme); color: var(--texto); min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--verde); padding: 24px; }
+  .login-box { background: var(--creme); border-radius: 12px; padding: 48px 40px; width: 100%; max-width: 360px; text-align: center; }
+  .login-logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--verde); line-height: 1.2; margin-bottom: 6px; }
+  .login-sub { font-size: 12px; color: var(--texto-muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 36px; }
+  .login-box input[type="password"] { width: 100%; padding: 12px 16px; border: 1px solid var(--borda); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; background: #fff; color: var(--texto); margin-bottom: 12px; outline: none; transition: border-color .2s; text-align: center; letter-spacing: .2em; }
+  .login-box input[type="password"]:focus { border-color: var(--borda-focus); }
+  .login-box button { width: 100%; padding: 12px; background: var(--verde); color: #fff; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background .2s; }
+  .login-box button:hover { background: var(--verde-light); }
+  .login-erro { color: var(--erro); font-size: 13px; margin-top: 10px; display: none; }
+
+  /* HEADER */
+  #app { display: none; }
+  header { background: var(--verde); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .header-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #fff; }
+  .header-sub { font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .06em; text-transform: uppercase; }
+  .btn-nova { background: var(--dourado); color: #fff; border: none; border-radius: var(--radius); padding: 9px 18px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity .2s; white-space: nowrap; flex-shrink: 0; }
+  .btn-nova:hover { opacity: .85; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--borda); background: #fff; padding: 0 24px; }
+  .tab { padding: 12px 20px; font-size: 13px; font-weight: 500; color: var(--texto-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
+  .tab.active { color: var(--verde); border-bottom-color: var(--verde); }
+  .tab:hover:not(.active) { color: var(--texto); }
+  .sub-tab { padding: 8px 18px; font-size: 13px; font-weight: 500; color: var(--texto-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
+  .sub-tab.active { color: var(--verde); border-bottom-color: var(--verde); }
+  .sub-tab:hover:not(.active) { color: var(--texto); }
+
+  /* CONTAINER */
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+  /* SEMANA */
+  .semana-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .semana-titulo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--verde); }
+  .semana-btns { display: flex; gap: 6px; }
+  .btn-nav { padding: 7px 14px; border: 1px solid var(--borda); border-radius: var(--radius); background: #fff; color: var(--texto-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all .15s; }
+  .btn-nav:hover { border-color: var(--verde); color: var(--verde); }
+  .btn-hoje { padding: 7px 14px; border: 1px solid var(--verde); border-radius: var(--radius); background: var(--verde); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; }
+
+  /* GRELHA SEMANAL */
+  .semana-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: start; }
+  .dia-col { background: #fff; border: 1px solid var(--borda); border-radius: 8px; display: flex; flex-direction: column; }
+  .dia-col.hoje { border-color: var(--verde); }
+  .dia-header { padding: 10px 10px 8px; border-bottom: 1px solid var(--borda); text-align: center; }
+  .dia-header.hoje { background: var(--verde); }
+  .dia-semana { font-size: 10px; font-weight: 500; color: var(--texto-muted); letter-spacing: .05em; text-transform: uppercase; }
+  .dia-header.hoje .dia-semana { color: rgba(255,255,255,.7); }
+  .dia-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--texto); line-height: 1; margin-top: 2px; }
+  .dia-header.hoje .dia-num { color: #fff; }
+  .dia-zona { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+  .dia-zona-dormidas { background: #f5f9f6; border-top: 2px solid var(--borda); padding: 4px; display: flex; flex-direction: column; gap: 2px; max-height: 110px; overflow-y: auto; flex-shrink: 0; }
+  .dia-zona-timeline { position: relative; overflow: hidden; }
+  .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--borda); opacity: .3; }
+  .tl-hour-lbl { position: absolute; left: 2px; font-size: 8px; color: var(--texto-muted); transform: translateY(-50%); line-height: 1; pointer-events: none; }
+  .tl-ev { position: absolute; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; border-left: 2px solid transparent; }
+  .tl-ev:hover { opacity: .85; }
+  .tl-ev-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
+  .tl-ev-det { font-size: 8px; line-height: 1.2; margin-top: 1px; }
+  .tl-ev-pagar { font-size: 8px; font-weight: 500; color: #854f0b; background: #faeeda; padding: 0 3px; border-radius: 2px; display: inline-block; }
+  .tl-ev-visita { background: #e6f1fb; border-left-color: #185fa5; } .tl-ev-visita .tl-ev-tipo { color: #0c447c; } .tl-ev-visita .tl-ev-det { color: #185fa5; }
+  .tl-ev-almoco { background: #faeeda; border-left-color: #854f0b; } .tl-ev-almoco .tl-ev-tipo { color: #633806; } .tl-ev-almoco .tl-ev-det { color: #854f0b; }
+  .tl-ev-jantar { background: #fbeaf0; border-left-color: #993556; } .tl-ev-jantar .tl-ev-tipo { color: #72243e; } .tl-ev-jantar .tl-ev-det { color: #993556; }
+  .tl-ev-tabua { background: #f1efe8; border-left-color: #5f5e5a; } .tl-ev-tabua .tl-ev-tipo { color: #444441; } .tl-ev-tabua .tl-ev-det { color: #5f5e5a; }
+  .tl-ev-outro { background: #f1efe8; border-left-color: #888780; } .tl-ev-outro .tl-ev-tipo { color: #444441; } .tl-ev-outro .tl-ev-det { color: #5f5e5a; }
+  .tl-ev-pax { background: #e8f0ea; border-left-color: #2d5a3d; } .tl-ev-pax .tl-ev-tipo { color: #1a3d28; } .tl-ev-pax .tl-ev-det { color: #3d7a52; }
+  .dia-eventos { padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+  .evento-pill { border-radius: 4px; padding: 4px 7px; cursor: pointer; transition: opacity .15s; }
+  .evento-pill:hover { opacity: .8; }
+  .evento-tipo { font-size: 10px; font-weight: 500; line-height: 1.2; }
+  .evento-det { font-size: 9px; margin-top: 1px; line-height: 1.2; opacity: .8; }
+  .evento-dormida { background: var(--verde-pale); }
+  .evento-dormida .evento-tipo { color: #1a3d28; }
+  .evento-dormida .evento-det { color: #2d5a3d; }
+  .evento-visita { background: #e6f1fb; }
+  .evento-visita .evento-tipo { color: #0c447c; }
+  .evento-visita .evento-det { color: #185fa5; }
+  .evento-almoco { background: var(--dourado-pale); }
+  .evento-almoco .evento-tipo { color: #633806; }
+  .evento-almoco .evento-det { color: #854f0b; }
+  .evento-outro { background: #f1efe8; }
+  .evento-outro .evento-tipo { color: #444441; }
+  .evento-outro .evento-det { color: #5f5e5a; }
+  .evento-checkout { background: #fbeaf0; }
+  .evento-checkout .evento-tipo { color: #72243e; }
+  .evento-checkout .evento-det { color: #993556; }
+  .evento-estadia { background: #f1f8ee; }
+  .evento-estadia .evento-tipo { color: #3b6d11; }
+  .evento-estadia .evento-det { color: #639922; }
+  .dia-vazio { padding: 12px 8px; font-size: 11px; color: var(--borda); text-align: center; }
+
+  /* LEGENDA */
+  .legenda { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--texto-muted); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* LISTA */
+  .lista-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .lista-titulo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--verde); }
+  .lista-count { font-size: 13px; color: var(--texto-muted); margin-top: 2px; }
+  .marcacao-card { background: #fff; border: 1px solid var(--borda); border-radius: 6px; padding: 8px 14px; margin-bottom: 6px; display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; transition: border-color .2s; }
+  .marcacao-card:hover { border-color: var(--verde-light); }
+  .card-data { text-align: center; background: var(--verde-pale); border-radius: 4px; padding: 5px 4px; }
+  .card-dia { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--verde); line-height: 1; }
+  .card-mes { font-size: 11px; color: var(--texto-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+  .card-tipo { font-size: 12px; font-weight: 500; color: var(--verde); margin-bottom: 2px; }
+  .card-responsavel { font-size: 12px; color: var(--texto); margin-bottom: 3px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag { font-size: 10px; padding: 1px 6px; border-radius: 99px; background: var(--dourado-pale); color: var(--dourado); font-weight: 500; }
+  .tag.verde { background: var(--verde-pale); color: var(--verde); }
+  .card-acoes { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .btn-editar { font-size: 12px; padding: 5px 12px; border-radius: var(--radius); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 1px solid var(--borda); background: #fff; color: var(--texto-muted); transition: all .15s; }
+  .btn-editar:hover { border-color: var(--verde); color: var(--verde); }
+  .btn-apagar { font-size: 12px; padding: 5px 12px; border-radius: var(--radius); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 1px solid transparent; background: transparent; color: #ccc; transition: all .15s; }
+  .btn-apagar:hover { color: var(--erro); }
+  .lista-vazia { text-align: center; padding: 60px 20px; color: var(--texto-muted); font-size: 15px; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-start; justify-content: center; z-index: 100; padding: 24px 16px 40px; overflow-y: auto; }
+  .modal-overlay.hidden { display: none; }
+  .modal { background: var(--creme); border-radius: 12px; width: 100%; max-width: 640px; padding: 32px; position: relative; margin: auto; }
+  .modal-titulo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--verde); margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--borda); }
+  .modal-fechar { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 22px; color: var(--texto-muted); cursor: pointer; padding: 4px; }
+  .modal-fechar:hover { color: var(--texto); }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 500; color: var(--texto-muted); letter-spacing: .04em; text-transform: uppercase; }
+  input[type="text"], input[type="date"], input[type="number"], input[type="time"], select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--borda); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--texto); background: #fff; outline: none; transition: border-color .2s; appearance: none; -webkit-appearance: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--borda-focus); box-shadow: 0 0 0 3px rgba(45,90,61,.08); }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b5e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  textarea { resize: vertical; min-height: 72px; }
+  .toggle-group { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #fff; border: 1px solid var(--borda); border-radius: var(--radius); }
+  .toggle-label-text { font-size: 14px; color: var(--texto); flex: 1; }
+  .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--borda); border-radius: 99px; cursor: pointer; transition: background .2s; }
+  .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .toggle input:checked + .toggle-slider { background: var(--verde); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(18px); }
+  .horario-custom { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .horario-custom.hidden { display: none; }
+  .form-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--borda); }
+  .form-section-titulo { font-size: 11px; font-weight: 500; color: var(--texto-muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--borda); }
+  .btn-cancelar { padding: 11px 22px; border: 1px solid var(--borda); border-radius: var(--radius); background: #fff; color: var(--texto-muted); font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: all .15s; }
+  .btn-cancelar:hover { border-color: var(--texto-muted); color: var(--texto); }
+  .btn-guardar { padding: 11px 28px; border: none; border-radius: var(--radius); background: var(--verde); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background .15s; }
+  .btn-guardar:hover { background: var(--verde-light); }
+  .btn-guardar:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* TOAST & LOADING */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--verde); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity .3s, transform .3s; pointer-events: none; }
+  .toast.erro { background: var(--erro); }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .loading-overlay { position: fixed; inset: 0; background: rgba(250,248,244,.8); display: flex; align-items: center; justify-content: center; z-index: 200; font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--verde); }
+  .loading-overlay.hidden { display: none; }
+  .resumo-stat { background: var(--creme); border-radius: 8px; padding: 14px 16px; text-align: center; }
+  .resumo-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; color: var(--verde); line-height: 1; }
+  .resumo-stat-label { font-size: 11px; color: var(--texto-muted); margin-top: 4px; }
+  .rel-th { background: var(--verde-pale); padding: 8px 12px; text-align: left; font-weight: 500; font-size: 11px; color: var(--verde); border-bottom: 1px solid var(--borda); white-space: nowrap; }
+  .rel-th-num { text-align: right; }
+  .rel-td { padding: 7px 12px; border-bottom: 1px solid #f0ede5; color: var(--texto); }
+  .rel-td-num { text-align: right; color: var(--texto-muted); }
+  .rel-td-num.val { color: var(--texto); font-weight: 500; }
+  .rel-tr:hover td { background: var(--creme); }
+  .rel-tr-total td { background: var(--verde-pale); font-weight: 500; border-top: 1px solid var(--borda); }
+  .ocup-card { background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 20px; }
+  .ocup-titulo { font-size: 13px; font-weight: 500; color: var(--verde); margin-bottom: 16px; }
+  .ocup-linha { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .ocup-label { color: var(--texto-muted); }
+  .ocup-val { font-weight: 500; color: var(--texto); }
+  .ocup-barra-wrap { background: #f0ede5; border-radius: 99px; height: 8px; margin-top: 12px; overflow: hidden; }
+  .ocup-barra { height: 100%; border-radius: 99px; background: var(--verde); transition: width .4s; }
+
+  /* VISTA DETALHE DIA (MODAL) */
+  .dia-detalhe { padding: 16px 0; }
+  .dia-detalhe-titulo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--verde); margin-bottom: 16px; }
+  .evento-detalhe-card { background: #fff; border: 1px solid var(--borda); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+  .ed-tipo { font-size: 13px; font-weight: 500; color: var(--verde); margin-bottom: 6px; }
+  .ed-linha { font-size: 13px; color: var(--texto-muted); margin-bottom: 3px; }
+  .ed-linha span { color: var(--texto); }
+
+  @media (max-width: 700px) {
+    .semana-grid { grid-template-columns: repeat(7,1fr); gap: 4px; }
+    .dia-header { padding: 7px 4px 6px; }
+    .dia-num { font-size: 16px; }
+    .dia-semana { font-size: 9px; }
+    .evento-pill { padding: 3px 4px; }
+    .evento-tipo { font-size: 9px; }
+    .evento-det { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .modal { padding: 24px 16px; }
+    .marcacao-card { grid-template-columns: 56px 1fr; }
+    .card-acoes { flex-direction: row; grid-column: 1 / -1; }
+    header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Quinta de Marrocos</div>
+    <div class="login-sub">Gestão de Marcações</div>
+    <input type="password" id="login-pass" placeholder="Password" onkeydown="if(event.key==='Enter')fazLogin()">
+    <button onclick="fazLogin()">Entrar</button>
+    <div class="login-erro" id="login-erro">Password incorreta</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div>
+      <div class="header-title">Quinta de Marrocos</div>
+      <div class="header-sub">Marcações</div>
+    </div>
+    <button class="btn-nova" onclick="abrirModal()">+ Nova marcação</button>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-semana" onclick="mudarVista('semana')">Semana</div>
+    <div class="tab" id="tab-lista" onclick="mudarVista('lista')">Lista</div>
+    <div class="tab" id="tab-relatorios" onclick="mudarVista('relatorios')">Relatórios</div>
+  </div>
+
+  <!-- VISTA SEMANAL -->
+  <div id="vista-semana" class="container">
+    <div class="semana-nav">
+      <div class="semana-titulo" id="semana-titulo"></div>
+      <div class="semana-btns">
+        <button class="btn-nav" onclick="navegarSemana(-1)">&#8592; Anterior</button>
+        <button class="btn-hoje" onclick="irParaHoje()">Hoje</button>
+        <button class="btn-nav" onclick="navegarSemana(1)">Próxima &#8594;</button>
+      </div>
+    </div>
+    <div class="legenda">
+      <div class="leg-item"><div class="leg-dot" style="background:#e8f0ea;border:1px solid #2d5a3d30"></div>Dormida</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e6f1fb;border:1px solid #185fa530"></div>Visita / Prova</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f9f3e6;border:1px solid #b8933a30"></div>Almoço / Jantar</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f1efe8;border:1px solid #88878030"></div>Outros</div>
+    </div>
+    <div class="semana-grid" id="semana-grid" style="align-items:stretch"></div>
+  </div>
+
+  <!-- VISTA LISTA -->
+  <div id="vista-lista" class="container" style="display:none">
+    <div class="lista-header">
+      <div>
+        <div class="lista-titulo">Todas as marcações</div>
+        <div class="lista-count" id="lista-count">A carregar...</div>
+      </div>
+    </div>
+    <div id="lista-marcacoes"></div>
+  </div>
+</div>
+
+  <!-- VISTA RELATÓRIOS -->
+  <div id="vista-relatorios" class="container" style="display:none">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--verde);flex:1">Relatórios</div>
+      <select id="rel-mes" onchange="mudarFiltroRelatorio()" style="padding:8px 12px;border:1px solid var(--borda);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;background:#fff;color:var(--texto)">
+        <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option>
+        <option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option>
+        <option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option>
+        <option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+        <option value="custom">Período personalizado</option>
+      </select>
+      <div id="rel-custom" style="display:none;display:flex;gap:8px;align-items:center">
+        <input type="date" id="rel-inicio" onchange="mudarFiltroRelatorio()" style="padding:8px 12px;border:1px solid var(--borda);border-radius:var(--radius);font-size:13px;background:#fff">
+        <span style="color:var(--texto-muted);font-size:13px">até</span>
+        <input type="date" id="rel-fim" onchange="mudarFiltroRelatorio()" style="padding:8px 12px;border:1px solid var(--borda);border-radius:var(--radius);font-size:13px;background:#fff">
+      </div>
+    </div>
+
+    <!-- Resumos rápidos -->
+    <div id="rel-resumos" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:28px"></div>
+
+    <!-- Tabela por canal -->
+    <div style="font-size:11px;font-weight:500;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">Por canal / agência</div>
+    <div style="overflow-x:auto;border:1px solid var(--borda);border-radius:8px;margin-bottom:32px">
+      <table id="rel-tabela" style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead id="rel-thead"></thead>
+        <tbody id="rel-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Ocupação -->
+    <div style="font-size:11px;font-weight:500;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">Ocupação por alojamento</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px" id="rel-ocupacao"></div>
+
+    <!-- Países -->
+    <div style="font-size:11px;font-weight:500;color:var(--texto-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px">Hóspedes por país</div>
+    <div style="overflow-x:auto;border:1px solid var(--borda);border-radius:8px">
+      <table id="rel-paises" style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr>
+            <th class="rel-th">País</th>
+            <th class="rel-th rel-th-num">Casa Principal</th>
+            <th class="rel-th rel-th-num">Hóspedes CP</th>
+            <th class="rel-th rel-th-num">Noites CP</th>
+            <th class="rel-th rel-th-num">Casa de Hóspedes</th>
+            <th class="rel-th rel-th-num">Hóspedes CH</th>
+            <th class="rel-th rel-th-num">Noites CH</th>
+            <th class="rel-th rel-th-num">Total hóspedes</th>
+            <th class="rel-th rel-th-num">Total noites</th>
+          </tr>
+        </thead>
+        <tbody id="rel-paises-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+<!-- MODAL FORMULÁRIO -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-titulo" id="modal-titulo">Nova Marcação</div>
+    <button class="modal-fechar" onclick="fecharModal()">×</button>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" id="f-data" required>
+      </div>
+      <div class="form-group">
+        <label>Tipo de Evento</label>
+        <select id="f-tipo">
+          <option value="">— escolher —</option>
+          <option>Prova</option>
+          <option>Visita com Prova</option>
+          <option>Almoço</option>
+          <option>Almoço com Visita</option>
+          <option>Visita com Tábua</option>
+          <option>Visita com Jantar</option>
+          <option>Tábua</option>
+          <option>Jantar</option>
+          <option>Dormida</option>
+          <option>1 Day Tour</option>
+          <option>Outros</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Responsável / Nome</label>
+        <input type="text" id="f-responsavel" placeholder="Nome do hóspede ou grupo">
+      </div>
+      <div class="form-group">
+        <label>Agência</label>
+        <select id="f-agencia">
+          <option value="">— escolher —</option>
+          <option>Oferta BP</option>
+          <option>"Joãozinho"</option>
+          <option>LuisaTodi</option>
+          <option>PortugalbyWine</option>
+          <option>Lux</option>
+          <option>CMT</option>
+          <option>Be in Travel</option>
+          <option>Direct</option>
+          <option>Go Travel</option>
+          <option>BooKing</option>
+          <option>Creative Star</option>
+          <option>Argon Travel</option>
+          <option>Timeless (Century)</option>
+          <option>On Travel</option>
+          <option>UNO TOUR</option>
+          <option>Belatour Lamego</option>
+          <option>PMA TRAVEL</option>
+          <option>Pinto Lopes Viagens</option>
+          <option>North Senses Tour</option>
+          <option>Portimar</option>
+          <option>N Roteiros</option>
+          <option>São Bernardo Tour</option>
+          <option>Oattravel</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nº de Clientes</label>
+        <input type="number" id="f-clientes" min="1" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Língua</label>
+        <select id="f-lingua">
+          <option value="">— escolher —</option>
+          <option>Inglês</option>
+          <option>Português</option>
+          <option>Francês</option>
+          <option>Espanhol</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Horário</label>
+        <select id="f-horario" onchange="toggleHorarioCustom()">
+          <option value="">— escolher —</option>
+          <option>10:00–11:30</option>
+          <option>10:30–12:00</option>
+          <option>10:30–13:30</option>
+          <option>11:30–13:00</option>
+          <option>12:00–13:30</option>
+          <option>12:30–15:00</option>
+          <option>13:00–15:30</option>
+          <option>14:00–15:30</option>
+          <option>14:30–16:00</option>
+          <option>15:15–16:45</option>
+          <option>16:00–17:30</option>
+          <option>16:30–18:00</option>
+          <option>17:30–19:00</option>
+          <option>17:30–21:00</option>
+          <option>19:00–21:00</option>
+          <option>11:30h</option>
+          <option value="outro">Outro horário...</option>
+        </select>
+        <div class="horario-custom hidden" id="horario-custom">
+          <input type="time" id="f-hora-inicio">
+          <input type="time" id="f-hora-fim">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Local</label>
+        <select id="f-local">
+          <option value="">— escolher —</option>
+          <option>Casa Principal</option>
+          <option>Casa de Hóspedes</option>
+          <option>Sala de Refeições</option>
+          <option>Terraço</option>
+          <option>Cozinha de Lavoura</option>
+          <option>Loja</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Guia / Motorista</label>
+        <input type="text" id="f-guia" placeholder="Nome do guia">
+      </div>
+      <div class="form-group">
+        <label>Noites</label>
+        <input type="number" id="f-noites" min="1" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>País</label>
+        <input type="text" id="f-pais" placeholder="País de origem">
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-titulo">Pagamento</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <div class="toggle-group">
+            <span class="toggle-label-text">Pagar na Quinta</span>
+            <label class="toggle">
+              <input type="checkbox" id="f-pagar" onchange="toggleValor()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group full" id="grupo-valor" style="display:none">
+          <label>Valor a Pagar (€)</label>
+          <input type="number" id="f-valor" min="0" step="0.01" placeholder="0,00">
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-titulo">Notas</div>
+      <div class="form-group">
+        <textarea id="f-obs" placeholder="Observações, alergias, pedidos especiais..."></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-guardar" id="btn-guardar" onclick="guardarMarcacao()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE DIA -->
+<div class="modal-overlay hidden" id="modal-dia-overlay">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-titulo" id="modal-dia-titulo"></div>
+    <button class="modal-fechar" onclick="fecharModalDia()">×</button>
+    <div id="modal-dia-content"></div>
+    <div class="form-actions" style="margin-top:16px;padding-top:16px">
+      <button class="btn-cancelar" onclick="fecharModalDia()">Fechar</button>
+      <button class="btn-guardar" onclick="fecharModalDia();abrirModal()">+ Nova marcação</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="loading-overlay hidden" id="loading">A carregar...</div>
+
+<script>
+  const SUPABASE_URL = 'https://larfawiuvojqodbtgedy.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_Guqk02UALbP24zB0zlLeRw_0J04jwyn';
+  const SB_EMAIL = 'management@quintademarrocos.pt';
+  const SB_PASS = 'Marrocos1932';
+  const PASSWORD = 'quinta2026';
+
+  let marcacoes = [];
+  let editandoId = null;
+  let semanaOffset = 0;
+  let vistaAtual = 'semana';
+  let sbToken = null;
+
+  const DIAS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const MESES_SHORT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+  async function sbAuth() {
+    const cached = sessionStorage.getItem('sb_token');
+    const exp = sessionStorage.getItem('sb_token_exp');
+    if (cached && exp && Date.now() < parseInt(exp)) { sbToken = cached; return; }
+    const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: SB_EMAIL, password: SB_PASS })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.message || 'Erro de autenticação');
+    sbToken = data.access_token;
+    // token expira em 1 hora, guardamos com margem de 55 min
+    sessionStorage.setItem('sb_token', sbToken);
+    sessionStorage.setItem('sb_token_exp', Date.now() + 55 * 60 * 1000);
+  }
+
+  async function sbFetch(path, options = {}) {
+    const token = sbToken || SUPABASE_KEY;
+    const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      ...options,
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Prefer': options.method === 'POST' ? 'return=representation' : '',
+        ...(options.headers || {})
+      }
+    });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || 'Erro Supabase'); }
+    return res.status === 204 ? null : res.json();
+  }
+
+  async function fazLogin() {
+    if (document.getElementById('login-pass').value === PASSWORD) {
+      try {
+        await sbAuth();
+        sessionStorage.setItem('marcacoes_auth', '1');
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        carregarMarcacoes();
+      } catch(e) {
+        document.getElementById('login-erro').textContent = 'Erro de ligação ao servidor.';
+        document.getElementById('login-erro').style.display = 'block';
+      }
+    } else {
+      document.getElementById('login-erro').textContent = 'Password incorreta';
+      document.getElementById('login-erro').style.display = 'block';
+    }
+  }
+
+  async function carregarMarcacoes() {
+    mostrarLoading(true);
+    try {
+      marcacoes = await sbFetch('marcacoes?order=data.asc&select=*');
+      renderVista();
+    } catch(e) {
+      mostrarToast('Erro ao carregar marcações', true);
+    } finally {
+      mostrarLoading(false);
+    }
+  }
+
+  function mudarVista(v) {
+    vistaAtual = v;
+    document.getElementById('vista-semana').style.display = v === 'semana' ? 'block' : 'none';
+    document.getElementById('vista-lista').style.display = v === 'lista' ? 'block' : 'none';
+    document.getElementById('vista-relatorios').style.display = v === 'relatorios' ? 'block' : 'none';
+    document.getElementById('tab-semana').className = 'tab' + (v === 'semana' ? ' active' : '');
+    document.getElementById('tab-lista').className = 'tab' + (v === 'lista' ? ' active' : '');
+    document.getElementById('tab-relatorios').className = 'tab' + (v === 'relatorios' ? ' active' : '');
+    if (v === 'relatorios') renderRelatorio();
+    else renderVista();
+  }
+
+  function renderVista() {
+    if (vistaAtual === 'semana') renderSemana();
+    else renderLista();
+  }
+
+  /* ── SEMANA ── */
+  function getLunesDaSemana(offset) {
+    const hoje = new Date();
+    const dia = hoje.getDay();
+    const diff = (dia === 0 ? -6 : 1 - dia);
+    const seg = new Date(hoje);
+    seg.setDate(hoje.getDate() + diff + offset * 7);
+    seg.setHours(0, 0, 0, 0);
+    return seg;
+  }
+
+  function toISO(d) {
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function classEvento(tipo) {
+    if (!tipo) return 'evento-outro';
+    const t = tipo.toLowerCase();
+    if (t.includes('dormida')) return 'evento-dormida';
+    if (t.includes('visita') || t.includes('prova') || t.includes('tábua') || t.includes('tabua') || t.includes('tour')) return 'evento-visita';
+    if (t.includes('almoço') || t.includes('almoco') || t.includes('jantar') || t.includes('tábua')) return 'evento-almoco';
+    return 'evento-outro';
+  }
+
+  function navegarSemana(d) { semanaOffset += d; renderSemana(); }
+  function irParaHoje() { semanaOffset = 0; renderSemana(); }
+
+  function renderSemana() {
+    const seg = getLunesDaSemana(semanaOffset);
+    const fim = new Date(seg); fim.setDate(seg.getDate() + 6);
+    const titulo = seg.getDate() + ' ' + MESES_SHORT[seg.getMonth()] + ' – ' + fim.getDate() + ' ' + MESES_SHORT[fim.getMonth()] + ' ' + fim.getFullYear();
+    document.getElementById('semana-titulo').textContent = titulo;
+
+    const hojeISO = toISO(new Date());
+    const grid = document.getElementById('semana-grid-eventos');
+    if (!grid) { console.error('semana-grid-eventos not found'); return; }
+    grid.innerHTML = '';
+    const gridDorm = document.getElementById('semana-grid-dormidas');
+    if (gridDorm) gridDorm.innerHTML = '';
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(seg); d.setDate(seg.getDate() + i);
+      const iso = toISO(d);
+      const isHoje = iso === hojeISO;
+
+      // Agrupar dormidas por local e papel (checkin/estadia/checkout)
+      const dormidas = { checkin: {}, checkout: {}, estadia: {} };
+      const outrosEventos = [];
+
+      marcacoes.forEach(m => {
+        if (!m.data) return;
+        if (m.tipo_evento === 'Dormida' && m.noites) {
+          const checkOutDate = new Date(m.data + 'T12:00:00');
+          checkOutDate.setDate(checkOutDate.getDate() + m.noites);
+          const checkOut = toISO(checkOutDate);
+          const dCheck = new Date(iso + 'T12:00:00');
+          const start = new Date(m.data + 'T12:00:00');
+          const local = m.local || 'Sem local';
+          if (iso === m.data) {
+            if (!dormidas.checkin[local]) dormidas.checkin[local] = [];
+            dormidas.checkin[local].push({ ...m, _checkout: checkOut });
+          } else if (iso === checkOut) {
+            if (!dormidas.checkout[local]) dormidas.checkout[local] = [];
+            dormidas.checkout[local].push({ ...m, _checkout: checkOut });
+          } else if (dCheck > start && dCheck < checkOutDate) {
+            if (!dormidas.estadia[local]) dormidas.estadia[local] = [];
+            dormidas.estadia[local].push({ ...m, _checkout: checkOut });
+          }
+        } else if (m.data === iso) {
+          outrosEventos.push(m);
+        }
+      });
+
+      const col = document.createElement('div');
+      col.className = 'dia-col' + (isHoje ? ' hoje' : '');
+
+      const hdr = document.createElement('div');
+      hdr.className = 'dia-header' + (isHoje ? ' hoje' : '');
+      hdr.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
+      col.appendChild(hdr);
+
+      const amanha = new Date(iso + 'T12:00:00');
+      amanha.setDate(amanha.getDate() + 1);
+      const amanhaISO = toISO(amanha);
+
+      // Peq. almoço: estadia + checkout
+      let paxPA = 0;
+      Object.values(dormidas.estadia).forEach(lista => lista.filter(m => m._checkout >= amanhaISO).forEach(m => paxPA += (m.clientes||0)));
+      Object.values(dormidas.checkout).forEach(lista => lista.forEach(m => paxPA += (m.clientes||0)));
+
+      // ── TIMELINE ──
+      const TL_START = 7.5, TL_END = 21.0, TL_PPH = 30;
+      const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
+      const tlTop = h => Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
+      const tlH = (h1,h2) => Math.max(16, Math.round((Math.min(TL_END,h2)-Math.max(TL_START,h1))*TL_PPH));
+      const tlCls = tipo => {
+        if (!tipo) return 'tl-ev-outro';
+        const t = tipo.toLowerCase();
+        if (t.includes('almoço')||t.includes('almoco')) return 'tl-ev-almoco';
+        if (t.includes('jantar')) return 'tl-ev-jantar';
+        if (t.includes('tábua')||t.includes('tabua')) return 'tl-ev-tabua';
+        if (t.includes('visita')||t.includes('prova')||t.includes('tour')) return 'tl-ev-visita';
+        return 'tl-ev-outro';
+      };
+      const parseH = s => {
+        if (!s) return null;
+        const m = String(s).match(/(\d{1,2})[:.h\-](\d{2})?/);
+        return m ? parseInt(m[1]) + (m[2] ? parseInt(m[2])/60 : 0) : null;
+      };
+
+      const zonaTL = document.createElement('div');
+      zonaTL.className = 'dia-zona-timeline';
+      zonaTL.style.height = TL_H + 'px';
+
+      // Linhas de hora contínuas
+      for (let h = Math.ceil(TL_START); h <= Math.floor(TL_END); h++) {
+        const t = tlTop(h);
+        const ln = document.createElement('div'); ln.className='tl-hour-line'; ln.style.top=t+'px'; zonaTL.appendChild(ln);
+        const lb = document.createElement('div'); lb.className='tl-hour-lbl'; lb.style.top=t+'px'; lb.textContent=h+'h'; zonaTL.appendChild(lb);
+      }
+
+      // Peq. almoço automático
+      if (paxPA > 0) {
+        const ev = document.createElement('div');
+        ev.className = 'tl-ev tl-ev-pax';
+        ev.style.cssText = `top:${tlTop(8)}px;height:${tlH(8,9)}px;left:20px;right:2px`;
+        ev.innerHTML = `<div class="tl-ev-tipo">Peq. almoço</div><div class="tl-ev-det">${paxPA} pessoa${paxPA>1?'s':''}</div>`;
+        ev.onclick = () => abrirDetalhesDia(iso, d);
+        zonaTL.appendChild(ev);
+      }
+
+      // Eventos com hora, sem dormidas, ordenados
+      const comHora = outrosEventos.filter(ev => ev.horario);
+      comHora.sort((a,b) => (parseH(a.horario)||0)-(parseH(b.horario)||0));
+
+      // Detetar sobreposições e calcular colunas
+      const cols_ev = [];
+      comHora.forEach(ev => {
+        const h1 = parseH(ev.horario); if (!h1) return;
+        const parts = String(ev.horario).split(/[-–]/);
+        const h2 = parts[1] ? parseH(parts[1].trim()) : h1+1;
+        const ev_h2 = h2||h1+1;
+        let col_idx = 0;
+        for (let ci=0; ci<cols_ev.length; ci++) {
+          const last = cols_ev[ci][cols_ev[ci].length-1];
+          if (last.h2 <= h1) { col_idx=ci; break; }
+          col_idx = ci+1;
+        }
+        if (!cols_ev[col_idx]) cols_ev[col_idx]=[];
+        cols_ev[col_idx].push({ev, h1, h2:ev_h2});
+      });
+
+      const nCols = cols_ev.length || 1;
+      cols_ev.forEach((colEvs, ci) => {
+        colEvs.forEach(({ev, h1, h2}) => {
+          const el = document.createElement('div');
+          el.className = 'tl-ev ' + tlCls(ev.tipo_evento);
+          const leftPct = 20 + ci*(80/nCols);
+          const widthPct = 80/nCols;
+          el.style.cssText = `top:${tlTop(h1)}px;height:${tlH(h1,h2)}px;left:calc(${leftPct}px);right:${ci<nCols-1?`calc(${80-(ci+1)*(80/nCols)}px)`:'2px'}`;
+          el.style.left = (20 + ci*(Math.floor(78/nCols))) + 'px';
+          el.style.right = (ci < nCols-1) ? ((nCols-ci-1)*Math.floor(78/nCols))+'px' : '2px';
+          const det = [ev.local, ev.clientes ? ev.clientes+'p' : '', ev.agencia].filter(Boolean).join(' · ');
+          const pagar = ev.pagar_na_quinta && ev.valor_a_pagar ? `<span class="tl-ev-pagar">${ev.valor_a_pagar}€</span>` : '';
+          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento||'—'}</div><div class="tl-ev-det">${det}</div>${pagar}`;
+          el.onclick = () => abrirDetalhesDia(iso, d);
+          zonaTL.appendChild(el);
+        });
+      });
+
+      col.appendChild(zonaTL);
+
+      // ── ALOJAMENTO EM BAIXO ──
+      const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
+      if (temDormidas) {
+        const zonaD = document.createElement('div');
+        zonaD.className = 'dia-zona-dormidas';
+
+        Object.entries(dormidas.estadia).forEach(([local, lista]) => {
+          const emOcupacao = lista.filter(m => m._checkout >= amanhaISO);
+          if (emOcupacao.length === 0) return;
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-estadia';
+          const n = emOcupacao.length;
+          const det = n > 1 ? n+' quartos' : (emOcupacao[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">🛏 ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaD.appendChild(pill);
+        });
+        Object.entries(dormidas.checkin).forEach(([local, lista]) => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-dormida';
+          const n = lista.length;
+          const det = n > 1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↓ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaD.appendChild(pill);
+        });
+        Object.entries(dormidas.checkout).forEach(([local, lista]) => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-checkout';
+          const n = lista.length;
+          const det = n > 1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↑ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaD.appendChild(pill);
+        });
+        col.appendChild(zonaD);
+      }
+
+      grid.appendChild(col);
+
+      // Col para a vista de dormidas
+      const colD = document.createElement('div');
+      colD.className = 'dia-col' + (isHoje ? ' hoje' : '');
+      const hdrD = document.createElement('div');
+      hdrD.className = 'dia-header' + (isHoje ? ' hoje' : '');
+      hdrD.innerHTML = `<div class="dia-semana">${DIAS_PT[d.getDay()]}</div><div class="dia-num">${d.getDate()}</div>`;
+      colD.appendChild(hdrD);
+
+      const zonaDevts = document.createElement('div');
+      zonaDevts.className = 'dia-zona dia-zona-eventos';
+
+      const temDormidasD = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
+      if (!temDormidasD) {
+        zonaDevts.innerHTML = '<div class="dia-vazio">—</div>';
+      } else {
+        Object.entries(dormidas.estadia).forEach(([local, lista]) => {
+          const amanhaDx = new Date(iso + 'T12:00:00'); amanhaDx.setDate(amanhaDx.getDate()+1);
+          const aDx = toISO(amanhaDx);
+          const emOc = lista.filter(m => m._checkout >= aDx);
+          if (!emOc.length) return;
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-estadia';
+          const n = emOc.length;
+          const det = n>1 ? n+' quartos' : (emOc[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">🛏 ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaDevts.appendChild(pill);
+        });
+        Object.entries(dormidas.checkin).forEach(([local, lista]) => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-dormida';
+          const n = lista.length;
+          const det = n>1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↓ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaDevts.appendChild(pill);
+        });
+        Object.entries(dormidas.checkout).forEach(([local, lista]) => {
+          const pill = document.createElement('div');
+          pill.className = 'evento-pill evento-checkout';
+          const n = lista.length;
+          const det = n>1 ? n+' quartos' : (lista[0].responsavel||'');
+          pill.innerHTML = `<div class="evento-tipo">↑ ${local}</div>${det?'<div class="evento-det">'+det+'</div>':''}`;
+          pill.onclick = () => abrirDetalhesDia(iso, d);
+          zonaDevts.appendChild(pill);
+        });
+      }
+      colD.appendChild(zonaDevts);
+      gridDorm.appendChild(colD);
+    }
+  }
+
+  function abrirDetalhesDia(iso, d) {
+    const eventos = [];
+    marcacoes.forEach(m => {
+      if (!m.data) return;
+      if (m.tipo_evento === 'Dormida' && m.noites) {
+        const checkOutDate = new Date(m.data + 'T12:00:00');
+        checkOutDate.setDate(checkOutDate.getDate() + m.noites);
+        const checkOut = toISO(checkOutDate);
+        const dCheck = new Date(iso + 'T12:00:00');
+        const start = new Date(m.data + 'T12:00:00');
+        if (iso === m.data) eventos.push({ ...m, _papel: 'Check-in', _checkout: checkOut });
+        else if (iso === checkOut) eventos.push({ ...m, _papel: 'Check-out', _checkout: checkOut });
+        else if (dCheck > start && dCheck < checkOutDate) eventos.push({ ...m, _papel: 'Em estadia', _checkout: checkOut });
+      } else if (m.data === iso) {
+        eventos.push({ ...m, _papel: null });
+      }
+    });
+
+    const titulo = DIAS_PT[d.getDay()] + ', ' + d.getDate() + ' de ' + MESES_PT[d.getMonth()];
+    document.getElementById('modal-dia-titulo').textContent = titulo;
+
+    const content = document.getElementById('modal-dia-content');
+    if (eventos.length === 0) {
+      content.innerHTML = '<p style="color:var(--texto-muted);font-size:14px">Sem marcações neste dia.</p>';
+    } else {
+      content.innerHTML = eventos.map(ev => {
+        const checkoutStr = ev._checkout ? `<div class="ed-linha">Check-out: <span>${ev._checkout}</span></div>` : '';
+        const papelBadge = ev._papel ? `<span style="font-size:11px;padding:2px 8px;border-radius:99px;background:#e8f0ea;color:#2d5a3d;font-weight:500;margin-left:8px">${ev._papel}</span>` : '';
+        const linhas = [
+          ev.data ? `<div class="ed-linha">Check-in: <span>${ev.data}</span></div>` : '',
+          ev._checkout ? `<div class="ed-linha">Check-out: <span>${ev._checkout}</span></div>` : '',
+          ev.responsavel ? `<div class="ed-linha">Responsável: <span>${ev.responsavel}</span></div>` : '',
+          ev.agencia ? `<div class="ed-linha">Agência: <span>${ev.agencia}</span></div>` : '',
+          ev.clientes ? `<div class="ed-linha">Clientes: <span>${ev.clientes} pax</span></div>` : '',
+          ev.horario ? `<div class="ed-linha">Horário: <span>${ev.horario}</span></div>` : '',
+          ev.local ? `<div class="ed-linha">Local: <span>${ev.local}</span></div>` : '',
+          ev.lingua ? `<div class="ed-linha">Língua: <span>${ev.lingua}</span></div>` : '',
+          ev.noites ? `<div class="ed-linha">Noites: <span>${ev.noites}</span></div>` : '',
+          ev.pais ? `<div class="ed-linha">País: <span>${ev.pais}</span></div>` : '',
+          ev.pagar_na_quinta ? `<div class="ed-linha">Pagamento: <span>Pagar na Quinta${ev.valor_a_pagar ? ' — ' + ev.valor_a_pagar + '€' : ''}</span></div>` : '',
+          ev.observacoes ? `<div class="ed-linha">Notas: <span>${ev.observacoes}</span></div>` : '',
+        ].filter(Boolean).join('');
+        return `<div class="evento-detalhe-card">
+          <div class="ed-tipo">${ev.tipo_evento || '—'}${papelBadge}</div>
+          ${linhas}
+          <div style="margin-top:10px;display:flex;gap:6px">
+            <button class="btn-editar" onclick="fecharModalDia();editarMarcacao('${ev.id}')">Editar</button>
+            <button class="btn-apagar" onclick="fecharModalDia();apagarMarcacao('${ev.id}',event)">Apagar</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    document.getElementById('modal-dia-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharModalDia() {
+    document.getElementById('modal-dia-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  /* ── LISTA ── */
+  function renderLista() {
+    const lista = document.getElementById('lista-marcacoes');
+    const hojeISO = toISO(new Date());
+
+    // Ordena por data ascendente, começa em hoje
+    const ordenadas = [...marcacoes]
+      .filter(m => m.data)
+      .sort((a, b) => a.data.localeCompare(b.data));
+
+    const futuras = ordenadas.filter(m => m.data >= hojeISO);
+    const passadas = ordenadas.filter(m => m.data < hojeISO);
+
+    const count = document.getElementById('lista-count');
+    count.textContent = marcacoes.length + ' marcaç' + (marcacoes.length !== 1 ? 'ões' : 'ão') + ' · ' + futuras.length + ' a partir de hoje';
+
+    if (!marcacoes.length) { lista.innerHTML = '<div class="lista-vazia">Ainda não há marcações.</div>'; return; }
+
+    const renderCard = m => {
+      const d = new Date(m.data + 'T12:00:00');
+      const dia = d.getDate();
+      const mes = MESES_SHORT[d.getMonth()].toUpperCase();
+      const isPast = m.data < hojeISO;
+      let checkoutStr = '';
+      if (m.tipo_evento === 'Dormida' && m.noites) {
+        const co = new Date(m.data + 'T12:00:00');
+        co.setDate(co.getDate() + m.noites);
+        checkoutStr = ' → ' + co.getDate() + ' ' + MESES_SHORT[co.getMonth()].toUpperCase();
+      }
+      const tags = [
+        m.agencia && `<span class="tag">${m.agencia}</span>`,
+        m.local && `<span class="tag verde">${m.local}</span>`,
+        m.clientes && `<span class="tag">${m.clientes} pax</span>`,
+        m.lingua && `<span class="tag">${m.lingua}</span>`,
+        m.pagar_na_quinta && `<span class="tag" style="background:#fff3cd;color:#856404">Pagar na Quinta</span>`,
+      ].filter(Boolean).join('');
+      return `<div class="marcacao-card" style="${isPast ? 'opacity:.55' : ''}">
+        <div class="card-data"><div class="card-dia">${dia}</div><div class="card-mes">${mes}${checkoutStr}</div></div>
+        <div><div class="card-tipo">${m.tipo_evento || '—'}</div><div class="card-responsavel">${m.responsavel || ''} ${m.horario ? '· ' + m.horario : ''}</div><div class="card-tags">${tags}</div></div>
+        <div class="card-acoes">
+          <button class="btn-editar" onclick="editarMarcacao('${m.id}')">Editar</button>
+          <button class="btn-apagar" onclick="apagarMarcacao('${m.id}',event)">✕</button>
+        </div>
+      </div>`;
+    };
+
+    // Hoje e futuro primeiro, depois passado com separador
+    let html = futuras.map(renderCard).join('');
+    if (passadas.length) {
+      html += `<div style="text-align:center;padding:16px 0;font-size:12px;color:var(--texto-muted);letter-spacing:.05em;text-transform:uppercase;border-top:1px solid var(--borda);margin-top:8px;margin-bottom:8px">Marcações anteriores</div>`;
+      html += [...passadas].reverse().map(renderCard).join('');
+    }
+    lista.innerHTML = html;
+  }
+
+  /* ── MODAL FORM ── */
+  function abrirModal(dados = null) {
+    editandoId = dados ? dados.id : null;
+    document.getElementById('modal-titulo').textContent = dados ? 'Editar Marcação' : 'Nova Marcação';
+    limparForm();
+    if (dados) preencherForm(dados);
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharModal() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
+    editandoId = null;
+  }
+
+  function limparForm() {
+    ['f-data','f-tipo','f-responsavel','f-agencia','f-clientes','f-lingua','f-horario','f-hora-inicio','f-hora-fim','f-local','f-guia','f-noites','f-pais','f-valor','f-obs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('f-pagar').checked = false;
+    document.getElementById('grupo-valor').style.display = 'none';
+    document.getElementById('horario-custom').classList.add('hidden');
+  }
+
+  function preencherForm(m) {
+    const set = (id, v) => { if (document.getElementById(id) && v != null) document.getElementById(id).value = v; };
+    set('f-data', m.data); set('f-tipo', m.tipo_evento); set('f-responsavel', m.responsavel);
+    set('f-agencia', m.agencia); set('f-clientes', m.clientes); set('f-lingua', m.lingua);
+    set('f-local', m.local); set('f-guia', m.guia_motorista); set('f-noites', m.noites);
+    set('f-pais', m.pais); set('f-valor', m.valor_a_pagar); set('f-obs', m.observacoes);
+    document.getElementById('f-pagar').checked = !!m.pagar_na_quinta;
+    if (m.pagar_na_quinta) document.getElementById('grupo-valor').style.display = 'block';
+    if (m.horario) {
+      const sel = document.getElementById('f-horario');
+      const opt = [...sel.options].find(o => o.value === m.horario);
+      if (opt) { sel.value = m.horario; }
+      else {
+        sel.value = 'outro';
+        document.getElementById('horario-custom').classList.remove('hidden');
+        const parts = m.horario.split('–');
+        if (parts[0]) document.getElementById('f-hora-inicio').value = parts[0].trim();
+        if (parts[1]) document.getElementById('f-hora-fim').value = parts[1].trim();
+      }
+    }
+  }
+
+  function editarMarcacao(id) { const m = marcacoes.find(x => x.id === id); if (m) abrirModal(m); }
+
+  async function guardarMarcacao() {
+    const btn = document.getElementById('btn-guardar');
+    btn.disabled = true; btn.textContent = 'A guardar...';
+    try {
+      let horario = document.getElementById('f-horario').value;
+      if (horario === 'outro') {
+        const hi = document.getElementById('f-hora-inicio').value;
+        const hf = document.getElementById('f-hora-fim').value;
+        horario = hi && hf ? hi + '–' + hf : hi || hf || '';
+      }
+      const dados = {
+        data: document.getElementById('f-data').value || null,
+        tipo_evento: document.getElementById('f-tipo').value || null,
+        responsavel: document.getElementById('f-responsavel').value || null,
+        agencia: document.getElementById('f-agencia').value || null,
+        clientes: parseInt(document.getElementById('f-clientes').value) || null,
+        lingua: document.getElementById('f-lingua').value || null,
+        horario: horario || null,
+        local: document.getElementById('f-local').value || null,
+        guia_motorista: document.getElementById('f-guia').value || null,
+        noites: parseInt(document.getElementById('f-noites').value) || null,
+        pais: document.getElementById('f-pais').value || null,
+        pagar_na_quinta: document.getElementById('f-pagar').checked,
+        valor_a_pagar: parseFloat(document.getElementById('f-valor').value) || null,
+        observacoes: document.getElementById('f-obs').value || null,
+      };
+      if (editandoId) {
+        await sbFetch('marcacoes?id=eq.' + editandoId, { method: 'PATCH', body: JSON.stringify(dados) });
+        mostrarToast('Marcação atualizada ✓');
+      } else {
+        await sbFetch('marcacoes', { method: 'POST', body: JSON.stringify(dados) });
+        mostrarToast('Marcação guardada ✓');
+      }
+      fecharModal();
+      await carregarMarcacoes();
+    } catch(e) {
+      mostrarToast('Erro ao guardar: ' + e.message, true);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Guardar';
+    }
+  }
+
+  async function apagarMarcacao(id, evt) {
+    if (evt) evt.stopPropagation();
+    if (!confirm('Apagar esta marcação?')) return;
+    try {
+      await sbFetch('marcacoes?id=eq.' + id, { method: 'DELETE' });
+      mostrarToast('Marcação apagada');
+      await carregarMarcacoes();
+    } catch(e) { mostrarToast('Erro ao apagar', true); }
+  }
+
+  function toggleHorarioCustom() {
+    document.getElementById('horario-custom').classList.toggle('hidden', document.getElementById('f-horario').value !== 'outro');
+  }
+
+  function toggleValor() {
+    document.getElementById('grupo-valor').style.display = document.getElementById('f-pagar').checked ? 'block' : 'none';
+  }
+
+  function mostrarToast(msg, erro = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (erro ? ' erro' : '') + ' show';
+    setTimeout(() => { t.className = 'toast' + (erro ? ' erro' : ''); }, 3000);
+  }
+
+  function mostrarLoading(show) { document.getElementById('loading').classList.toggle('hidden', !show); }
+
+  document.getElementById('modal-overlay').addEventListener('click', function(e) { if (e.target === this) fecharModal(); });
+  document.getElementById('modal-dia-overlay').addEventListener('click', function(e) { if (e.target === this) fecharModalDia(); });
+
+  /* ── RELATÓRIOS ── */
+  function mudarFiltroRelatorio() {
+    const mes = document.getElementById('rel-mes').value;
+    const customDiv = document.getElementById('rel-custom');
+    customDiv.style.display = mes === 'custom' ? 'flex' : 'none';
+    renderRelatorio();
+  }
+
+  function getFiltroRelatorio() {
+    const mes = document.getElementById('rel-mes').value;
+    const ano = 2026;
+    if (mes === 'custom') {
+      return {
+        inicio: document.getElementById('rel-inicio').value || '2026-01-01',
+        fim: document.getElementById('rel-fim').value || '2026-12-31'
+      };
+    }
+    const m = parseInt(mes);
+    const inicio = ano + '-' + String(m+1).padStart(2,'0') + '-01';
+    const ultimoDia = new Date(ano, m+1, 0).getDate();
+    const fim = ano + '-' + String(m+1).padStart(2,'0') + '-' + ultimoDia;
+    return { inicio, fim };
+  }
+
+  function renderRelatorio() {
+    const { inicio, fim } = getFiltroRelatorio();
+    const dados = marcacoes.filter(m => m.data >= inicio && m.data <= fim);
+
+    const pax = m => m.clientes || 0;
+
+    // Tipo helpers
+    const is = (t, ...tipos) => tipos.includes(t);
+    const isDormida = t => t === 'Dormida';
+
+    // ── Resumos rápidos (todos em pax) ──
+    const hospedes    = dados.filter(m => isDormida(m.tipo_evento)).reduce((s,m) => s + pax(m), 0);
+    const noites      = dados.filter(m => isDormida(m.tipo_evento)).reduce((s,m) => s + (m.noites||0) * pax(m), 0);
+    const paxAlmVis   = dados.filter(m => m.tipo_evento === 'Almoço com Visita').reduce((s,m) => s + pax(m), 0);
+    const paxVisJan   = dados.filter(m => m.tipo_evento === 'Visita com Jantar').reduce((s,m) => s + pax(m), 0);
+    const paxVisPro   = dados.filter(m => m.tipo_evento === 'Visita com Prova').reduce((s,m) => s + pax(m), 0);
+    const paxVisTab   = dados.filter(m => m.tipo_evento === 'Visita com Tábua').reduce((s,m) => s + pax(m), 0);
+    const paxAlmoco   = dados.filter(m => m.tipo_evento === 'Almoço').reduce((s,m) => s + pax(m), 0);
+    const paxTabua    = dados.filter(m => m.tipo_evento === 'Tábua').reduce((s,m) => s + pax(m), 0);
+    const paxJantar   = dados.filter(m => m.tipo_evento === 'Jantar').reduce((s,m) => s + pax(m), 0);
+    const paxProva    = dados.filter(m => m.tipo_evento === 'Prova').reduce((s,m) => s + pax(m), 0);
+    const totalPax    = dados.reduce((s,m) => s + pax(m), 0);
+
+    const resumos = [
+      { num: hospedes,  label: 'Hóspedes' },
+      { num: noites,    label: 'Noites hospedagem' },
+      { num: paxVisPro, label: 'Visita c/ Prova' },
+      { num: paxAlmVis, label: 'Almoço c/ Visita' },
+      { num: paxVisJan, label: 'Visita c/ Jantar' },
+      { num: paxAlmoco, label: 'Almoço' },
+      { num: paxJantar, label: 'Jantar' },
+      { num: paxProva,  label: 'Prova' },
+      { num: paxVisTab, label: 'Visita c/ Tábua' },
+      { num: paxTabua,  label: 'Tábua' },
+      { num: totalPax,  label: 'Total pax' },
+    ];
+
+    document.getElementById('rel-resumos').innerHTML = resumos.map(r =>
+      `<div class="resumo-stat"><div class="resumo-stat-num">${r.num || 0}</div><div class="resumo-stat-label">${r.label}</div></div>`
+    ).join('');
+
+    // ── Tabela por canal (pax) ──
+    const COLS = [
+      { key: 'hospedes',  label: 'Hóspedes',        tipo: 'Dormida' },
+      { key: 'noites',    label: 'Noites',           tipo: '_noites' },
+      { key: 'prova',     label: 'Prova',            tipo: 'Prova' },
+      { key: 'visPro',    label: 'Visita c/ Prova',  tipo: 'Visita com Prova' },
+      { key: 'almoco',    label: 'Almoço',           tipo: 'Almoço' },
+      { key: 'almVis',    label: 'Almoço c/ Visita', tipo: 'Almoço com Visita' },
+      { key: 'tabua',     label: 'Tábua',            tipo: 'Tábua' },
+      { key: 'visTab',    label: 'Visita c/ Tábua',  tipo: 'Visita com Tábua' },
+      { key: 'jantar',    label: 'Jantar',           tipo: 'Jantar' },
+      { key: 'visJan',    label: 'Visita c/ Jantar', tipo: 'Visita com Jantar' },
+    ];
+
+    const canais = {};
+    dados.forEach(m => {
+      const canal = m.agencia || 'Sem agência';
+      if (!canais[canal]) {
+        canais[canal] = {};
+        COLS.forEach(c => canais[canal][c.key] = 0);
+      }
+      const c = canais[canal];
+      const t = m.tipo_evento || '';
+      const p = pax(m);
+      if (t === 'Dormida') {
+        c.hospedes += p;
+        c.noites += (m.noites || 0) * p;
+      }
+      COLS.filter(col => col.tipo === t).forEach(col => c[col.key] += p);
+    });
+
+    // Ordenar: BooKing primeiro, depois por hóspedes + pax total desc
+    const ordenados = Object.entries(canais).sort((a,b) => {
+      if (a[0] === 'BooKing') return -1;
+      if (b[0] === 'BooKing') return 1;
+      const tA = Object.values(a[1]).reduce((s,v) => s+v, 0);
+      const tB = Object.values(b[1]).reduce((s,v) => s+v, 0);
+      return tB - tA;
+    });
+
+    document.getElementById('rel-thead').innerHTML = `<tr>
+      <th class="rel-th">Canal / Agência</th>
+      ${COLS.map(c => `<th class="rel-th rel-th-num">${c.label}</th>`).join('')}
+    </tr>`;
+
+    const cel = v => `<td class="rel-td rel-td-num${v ? ' val' : ''}">${v || '—'}</td>`;
+
+    const tot = {};
+    COLS.forEach(c => tot[c.key] = 0);
+    ordenados.forEach(([,c]) => COLS.forEach(col => tot[col.key] += c[col.key]));
+
+    document.getElementById('rel-tbody').innerHTML =
+      ordenados.map(([canal, c]) => `<tr class="rel-tr">
+        <td class="rel-td" style="font-weight:500">${canal}</td>
+        ${COLS.map(col => cel(c[col.key])).join('')}
+      </tr>`).join('') +
+      `<tr class="rel-tr-total">
+        <td class="rel-td">Total</td>
+        ${COLS.map(col => `<td class="rel-td rel-td-num val">${tot[col.key] || '—'}</td>`).join('')}
+      </tr>`;
+
+    // ── Ocupação por alojamento ──
+    const { inicio: ini, fim: fi } = getFiltroRelatorio();
+    const d1 = new Date(ini + 'T12:00:00');
+    const d2 = new Date(fi + 'T12:00:00');
+    const diasPeriodo = Math.round((d2 - d1) / 86400000) + 1;
+
+    const dormidas = dados.filter(m => m.tipo_evento === 'Dormida');
+    const cpDorm = dormidas.filter(m => m.local === 'Casa Principal');
+    const chDorm = dormidas.filter(m => m.local === 'Casa de Hóspedes');
+
+    const cpQuartos = cpDorm.length;
+    const cpNoites = cpDorm.reduce((s,m) => s + (m.noites||0), 0);
+    const cpHospedes = cpDorm.reduce((s,m) => s + (m.clientes||0), 0);
+    const cpTaxa = Math.round(cpNoites / (3 * diasPeriodo) * 100);
+
+    const chQuartos = chDorm.length;
+    const chNoites = chDorm.reduce((s,m) => s + (m.noites||0), 0);
+    const chHospedes = chDorm.reduce((s,m) => s + (m.clientes||0), 0);
+    const chTaxa = Math.round(chNoites / (1 * diasPeriodo) * 100);
+
+    document.getElementById('rel-ocupacao').innerHTML = `
+      <div class="ocup-card">
+        <div class="ocup-titulo">🏠 Casa Principal <span style="font-size:11px;color:var(--texto-muted);font-weight:400">(3 quartos)</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Reservas</span><span class="ocup-val">${cpQuartos}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Hóspedes</span><span class="ocup-val">${cpHospedes}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Noites</span><span class="ocup-val">${cpNoites}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Dias no período</span><span class="ocup-val">${diasPeriodo}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Taxa de ocupação</span><span class="ocup-val" style="color:var(--verde);font-size:16px">${cpTaxa}%</span></div>
+        <div class="ocup-barra-wrap"><div class="ocup-barra" style="width:${Math.min(cpTaxa,100)}%"></div></div>
+      </div>
+      <div class="ocup-card">
+        <div class="ocup-titulo">🏡 Casa de Hóspedes <span style="font-size:11px;color:var(--texto-muted);font-weight:400">(1 quarto)</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Reservas</span><span class="ocup-val">${chQuartos}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Hóspedes</span><span class="ocup-val">${chHospedes}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Noites</span><span class="ocup-val">${chNoites}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Dias no período</span><span class="ocup-val">${diasPeriodo}</span></div>
+        <div class="ocup-linha"><span class="ocup-label">Taxa de ocupação</span><span class="ocup-val" style="color:var(--verde);font-size:16px">${chTaxa}%</span></div>
+        <div class="ocup-barra-wrap"><div class="ocup-barra" style="width:${Math.min(chTaxa,100)}%"></div></div>
+      </div>`;
+
+    // ── Países ──
+    const paises = {};
+    dormidas.forEach(m => {
+      const pais = (m.pais || 'Desconhecido').trim().split(' ')[0]; // simplifica país
+      const local = m.local || '';
+      if (!paises[pais]) paises[pais] = { cp_res:0, cp_hosp:0, cp_noites:0, ch_res:0, ch_hosp:0, ch_noites:0 };
+      const p = paises[pais];
+      if (local === 'Casa Principal') {
+        p.cp_res++; p.cp_hosp += m.clientes||0; p.cp_noites += m.noites||0;
+      } else if (local === 'Casa de Hóspedes') {
+        p.ch_res++; p.ch_hosp += m.clientes||0; p.ch_noites += m.noites||0;
+      }
+    });
+
+    const paisesOrdenados = Object.entries(paises)
+      .sort((a,b) => (b[1].cp_hosp + b[1].ch_hosp) - (a[1].cp_hosp + a[1].ch_hosp));
+
+    const totP = { cp_res:0, cp_hosp:0, cp_noites:0, ch_res:0, ch_hosp:0, ch_noites:0 };
+    paisesOrdenados.forEach(([,p]) => { totP.cp_res+=p.cp_res; totP.cp_hosp+=p.cp_hosp; totP.cp_noites+=p.cp_noites; totP.ch_res+=p.ch_res; totP.ch_hosp+=p.ch_hosp; totP.ch_noites+=p.ch_noites; });
+
+    const celP = v => `<td class="rel-td rel-td-num${v ? ' val' : ''}">${v || '—'}</td>`;
+
+    document.getElementById('rel-paises-body').innerHTML =
+      paisesOrdenados.map(([pais, p]) => `<tr class="rel-tr">
+        <td class="rel-td" style="font-weight:500">${pais}</td>
+        ${celP(p.cp_res)}${celP(p.cp_hosp)}${celP(p.cp_noites)}
+        ${celP(p.ch_res)}${celP(p.ch_hosp)}${celP(p.ch_noites)}
+        ${celP(p.cp_hosp + p.ch_hosp)}${celP(p.cp_noites + p.ch_noites)}
+      </tr>`).join('') +
+      `<tr class="rel-tr-total">
+        <td class="rel-td">Total</td>
+        <td class="rel-td rel-td-num val">${totP.cp_res||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.cp_hosp||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.cp_noites||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.ch_res||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.ch_hosp||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.ch_noites||'—'}</td>
+        <td class="rel-td rel-td-num val">${(totP.cp_hosp+totP.ch_hosp)||'—'}</td>
+        <td class="rel-td rel-td-num val">${(totP.cp_noites+totP.ch_noites)||'—'}</td>
+      </tr>`;
+  }
+
+  // Sub-tabs semana
+  function mudarSubTab(v) {
+    document.getElementById('svista-eventos').style.display = v === 'eventos' ? 'block' : 'none';
+    document.getElementById('svista-dormidas').style.display = v === 'dormidas' ? 'block' : 'none';
+    document.getElementById('subtab-eventos').className = 'sub-tab' + (v === 'eventos' ? ' active' : '');
+    document.getElementById('subtab-dormidas').className = 'sub-tab' + (v === 'dormidas' ? ' active' : '');
+  }
+
+  // Inicializar mês atual no selector de relatórios
+  document.getElementById('rel-mes').value = new Date().getMonth();
+
+  if (sessionStorage.getItem('marcacoes_auth') === '1') {
+    sbToken = sessionStorage.getItem('sb_token');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    carregarMarcacoes();
+  }
+</script>
+</body>
+</html>
