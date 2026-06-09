@@ -728,7 +728,7 @@
       Object.values(dormidas.checkout).forEach(lista => lista.forEach(m => paxPA += (m.clientes||0)));
 
       // ── TIMELINE ──
-      const TL_START = 7.5, TL_END = 21.0, TL_PPH = 30;
+      const TL_START = 7.5, TL_END = 21.5, TL_PPH = 28;
       const TL_H = Math.round((TL_END - TL_START) * TL_PPH);
       const tlTop = h => Math.round((Math.max(TL_START, Math.min(TL_END, h)) - TL_START) * TL_PPH);
       const tlH = (h1,h2) => Math.max(16, Math.round((Math.min(TL_END,h2)-Math.max(TL_START,h1))*TL_PPH));
@@ -809,9 +809,9 @@
 
       col.appendChild(zonaTL);
 
-      // ── ALOJAMENTO EM BAIXO ──
+      // ── ALOJAMENTO NA VISTA DORMIDAS APENAS ──
       const temDormidas = Object.keys(dormidas.checkin).length || Object.keys(dormidas.checkout).length || Object.keys(dormidas.estadia).length;
-      if (temDormidas) {
+      if (temDormidas && vistaAtual === 'dormidas') {
         const zonaD = document.createElement('div');
         zonaD.className = 'dia-zona-dormidas';
 
