@@ -78,11 +78,11 @@
   .dia-zona-timeline { position: relative; overflow: hidden; }
   .tl-hour-line { position: absolute; left: 0; right: 0; border-top: 0.5px solid var(--borda); opacity: .3; }
   .tl-hour-lbl { position: absolute; left: 2px; font-size: 8px; color: var(--texto-muted); transform: translateY(-50%); line-height: 1; pointer-events: none; }
-  .tl-ev { position: absolute; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; border-left: 2px solid transparent; }
+  .tl-ev { position: absolute; border-radius: 3px; padding: 2px 4px; overflow: hidden; cursor: pointer; border-left: 2px solid transparent; word-break: break-word; }
   .tl-ev:hover { opacity: .85; }
   .tl-ev-tipo { font-size: 9px; font-weight: 500; line-height: 1.2; }
   .tl-ev-det { font-size: 8px; line-height: 1.2; margin-top: 1px; }
-  .tl-ev-pagar { font-size: 8px; font-weight: 500; color: #854f0b; background: #faeeda; padding: 0 3px; border-radius: 2px; display: inline-block; }
+  .tl-ev-pagar { font-size: 8px; font-weight: 600; color: #854f0b; background: #faeeda; padding: 1px 3px; border-radius: 2px; display: inline-block; margin-top: 1px; white-space: nowrap; }
   .tl-ev-visita { background: #e6f1fb; border-left-color: #185fa5; } .tl-ev-visita .tl-ev-tipo { color: #0c447c; } .tl-ev-visita .tl-ev-det { color: #185fa5; }
   .tl-ev-almoco { background: #faeeda; border-left-color: #854f0b; } .tl-ev-almoco .tl-ev-tipo { color: #633806; } .tl-ev-almoco .tl-ev-det { color: #854f0b; }
   .tl-ev-jantar { background: #fbeaf0; border-left-color: #993556; } .tl-ev-jantar .tl-ev-tipo { color: #72243e; } .tl-ev-jantar .tl-ev-det { color: #993556; }
@@ -804,8 +804,8 @@
           el.style.left = (20 + ci*(Math.floor(78/nCols))) + 'px';
           el.style.right = (ci < nCols-1) ? ((nCols-ci-1)*Math.floor(78/nCols))+'px' : '2px';
           const det = [ev.local, ev.clientes ? ev.clientes+'p' : '', ev.agencia].filter(Boolean).join(' · ');
-          const pagar = ev.pagar_na_quinta && ev.valor_a_pagar ? `<span class="tl-ev-pagar"> ${ev.valor_a_pagar}€</span>` : (ev.pagar_na_quinta ? `<span class="tl-ev-pagar"> A pagar</span>` : '');
-          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento||'—'}${pagar}</div><div class="tl-ev-det">${det}</div>`;
+          const pagarVal = ev.pagar_na_quinta && ev.valor_a_pagar ? ev.valor_a_pagar + '€' : (ev.pagar_na_quinta ? 'A pagar' : '');
+          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento||'—'}</div><div class="tl-ev-det">${det}</div>${pagarVal ? '<div><span class="tl-ev-pagar">'+pagarVal+'</span></div>' : ''}`;
           el.onclick = () => abrirDetalhesDia(iso, d);
           zonaTL.appendChild(el);
         });
