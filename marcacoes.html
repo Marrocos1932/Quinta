@@ -804,8 +804,7 @@
           el.style.left = (20 + ci*(Math.floor(78/nCols))) + 'px';
           el.style.right = (ci < nCols-1) ? ((nCols-ci-1)*Math.floor(78/nCols))+'px' : '2px';
           const det = [ev.local, ev.clientes ? ev.clientes+'p' : '', ev.agencia].filter(Boolean).join(' · ');
-          const pagarVal = ev.pagar_na_quinta && ev.valor_a_pagar ? ev.valor_a_pagar + '€' : (ev.pagar_na_quinta ? 'A pagar' : '');
-          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento||'—'}</div><div class="tl-ev-det">${det}</div>${pagarVal ? '<div><span class="tl-ev-pagar">'+pagarVal+'</span></div>' : ''}`;
+          el.innerHTML = `<div class="tl-ev-tipo">${ev.tipo_evento||'—'}</div><div class="tl-ev-det">${det}</div>`;
           el.onclick = () => abrirDetalhesDia(iso, d);
           zonaTL.appendChild(el);
         });
