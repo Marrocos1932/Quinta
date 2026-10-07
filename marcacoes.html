@@ -356,6 +356,9 @@
             <th class="rel-th rel-th-num">Noites CH</th>
             <th class="rel-th rel-th-num">Total hóspedes</th>
             <th class="rel-th rel-th-num">Total noites</th>
+            <th class="rel-th rel-th-num">Dormidas CP</th>
+            <th class="rel-th rel-th-num">Dormidas CH</th>
+            <th class="rel-th rel-th-num">Total dormidas</th>
           </tr>
         </thead>
         <tbody id="rel-paises-body"></tbody>
@@ -1307,24 +1310,42 @@
       </div>`;
 
     // ── Países ──
+    // Considera todas as estadias com noites dentro do período (incluindo check-in
+    // anterior ao início) e conta apenas as noites que caem dentro do período.
+    // Dormidas = hóspedes × noites no período.
+    const dIni = new Date(ini + 'T12:00:00');
+    const dFimExcl = new Date(fi + 'T12:00:00'); dFimExcl.setDate(dFimExcl.getDate() + 1);
+    const noitesNoPeriodo = m => {
+      if (!m.data || !m.noites) return 0;
+      const ci = new Date(m.data + 'T12:00:00');
+      const co = new Date(ci); co.setDate(co.getDate() + m.noites);
+      const a = ci > dIni ? ci : dIni;
+      const b = co < dFimExcl ? co : dFimExcl;
+      return Math.max(0, Math.round((b - a) / 86400000));
+    };
+    const dormPaises = marcacoes.filter(m => m.tipo_evento === 'Dormida' && (
+      (m.data >= ini && m.data <= fi) || noitesNoPeriodo(m) > 0
+    ));
     const paises = {};
-    dormidas.forEach(m => {
+    dormPaises.forEach(m => {
       const pais = (m.pais || 'Desconhecido').trim().split(' ')[0]; // simplifica país
       const local = m.local || '';
-      if (!paises[pais]) paises[pais] = { cp_res:0, cp_hosp:0, cp_noites:0, ch_res:0, ch_hosp:0, ch_noites:0 };
+      if (!paises[pais]) paises[pais] = { cp_res:0, cp_hosp:0, cp_noites:0, cp_dorm:0, ch_res:0, ch_hosp:0, ch_noites:0, ch_dorm:0 };
       const p = paises[pais];
+      const n = noitesNoPeriodo(m);
+      const h = m.clientes || 0;
       if (local === 'Casa Principal') {
-        p.cp_res++; p.cp_hosp += m.clientes||0; p.cp_noites += m.noites||0;
+        p.cp_res++; p.cp_hosp += h; p.cp_noites += n; p.cp_dorm += n * h;
       } else if (local === 'Casa de Hóspedes') {
-        p.ch_res++; p.ch_hosp += m.clientes||0; p.ch_noites += m.noites||0;
+        p.ch_res++; p.ch_hosp += h; p.ch_noites += n; p.ch_dorm += n * h;
       }
     });
 
     const paisesOrdenados = Object.entries(paises)
       .sort((a,b) => (b[1].cp_hosp + b[1].ch_hosp) - (a[1].cp_hosp + a[1].ch_hosp));
 
-    const totP = { cp_res:0, cp_hosp:0, cp_noites:0, ch_res:0, ch_hosp:0, ch_noites:0 };
-    paisesOrdenados.forEach(([,p]) => { totP.cp_res+=p.cp_res; totP.cp_hosp+=p.cp_hosp; totP.cp_noites+=p.cp_noites; totP.ch_res+=p.ch_res; totP.ch_hosp+=p.ch_hosp; totP.ch_noites+=p.ch_noites; });
+    const totP = { cp_res:0, cp_hosp:0, cp_noites:0, cp_dorm:0, ch_res:0, ch_hosp:0, ch_noites:0, ch_dorm:0 };
+    paisesOrdenados.forEach(([,p]) => Object.keys(totP).forEach(k => totP[k] += p[k]));
 
     const celP = v => `<td class="rel-td rel-td-num${v ? ' val' : ''}">${v || '—'}</td>`;
 
@@ -1334,6 +1355,7 @@
         ${celP(p.cp_res)}${celP(p.cp_hosp)}${celP(p.cp_noites)}
         ${celP(p.ch_res)}${celP(p.ch_hosp)}${celP(p.ch_noites)}
         ${celP(p.cp_hosp + p.ch_hosp)}${celP(p.cp_noites + p.ch_noites)}
+        ${celP(p.cp_dorm)}${celP(p.ch_dorm)}${celP(p.cp_dorm + p.ch_dorm)}
       </tr>`).join('') +
       `<tr class="rel-tr-total">
         <td class="rel-td">Total</td>
@@ -1345,6 +1367,9 @@
         <td class="rel-td rel-td-num val">${totP.ch_noites||'—'}</td>
         <td class="rel-td rel-td-num val">${(totP.cp_hosp+totP.ch_hosp)||'—'}</td>
         <td class="rel-td rel-td-num val">${(totP.cp_noites+totP.ch_noites)||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.cp_dorm||'—'}</td>
+        <td class="rel-td rel-td-num val">${totP.ch_dorm||'—'}</td>
+        <td class="rel-td rel-td-num val">${(totP.cp_dorm+totP.ch_dorm)||'—'}</td>
       </tr>`;
   }
 
